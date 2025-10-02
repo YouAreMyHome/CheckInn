@@ -35,7 +35,7 @@
     "docs": "echo 'CheckInn Documentation:' && echo '- Progress: docs/PROGRESS_REPORT.md' && echo '- Summary: STATUS_SUMMARY.md' && echo '- README: README.md'",
     "status": "npm run docs",
     "test:health": "powershell -Command \"Write-Host 'Testing server health...' && try { $response = Invoke-WebRequest -Uri 'http://localhost:5000/health' -Method GET; Write-Host 'Server Status: OK'; $response.Content } catch { Write-Host 'Server Status: Not Running' }\"",
-    "info": "echo 'CheckInn - Website Đặt Phòng Khách Sạn' && echo 'Repository: https://github.com/YouAreMyHome/CheckInn_WebDatPhong.git' && echo 'Version: 2.0.0' && echo 'Status: Backend Core Complete' && echo 'Server: http://localhost:5000' && echo 'Use: npm start (to run server)'"
+    "info": "echo 'CheckInn - Website Đặt Phòng Khách Sạn' && echo 'Repository: https://github.com/YouAreMyHome/CheckInn.git' && echo 'Version: 2.0.0' && echo 'Status: Backend Core Complete' && echo 'Server: http://localhost:5000' && echo 'Use: npm start (to run server)'"
   },
   "keywords": [
     "hotel",
@@ -62,10 +62,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/YouAreMyHome/CheckInn_WebDatPhong.git"
+    "url": "https://github.com/YouAreMyHome/CheckInn.git"
   },
   "bugs": {
-    "url": "https://github.com/YouAreMyHome/CheckInn_WebDatPhong/issues"
+    "url": "https://github.com/YouAreMyHome/CheckInn/issues"
   },
-  "homepage": "https://github.com/YouAreMyHome/CheckInn_WebDatPhong"
+  "homepage": "https://github.com/YouAreMyHome/CheckInn"
 }

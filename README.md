@@ -1,6 +1,6 @@
 # 🏨 CheckInn - Website Đặt Phòng Khách Sạn 
 
-**Repository**: https://github.com/YouAreMyHome/CheckInn_WebDatPhong.git  
+**Repository**: https://github.com/YouAreMyHome/CheckInn.git  
 **Version**: 2.0.0 | **Status**: ✅ Backend Core Complete
 
 ## 🚀 Quick Start (Run from Root Directory)
