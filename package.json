@@ -8,14 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "npm run start:api:simple",
-    "start:simple": "cd apps/api-server && npm run start",
-    "start:full": "cd apps/api-server && npm run start:full",
-    "start:basic": "cd apps/api-server && npm run start:basic",
-    "start:api": "npm run start:simple",
-    "start:api:simple": "cd apps/api-server && npm run start",
-    "start:api:full": "cd apps/api-server && npm run start:full",
-    "start:api:basic": "cd apps/api-server && npm run start:basic",
+    "start": "npm run start:api",
+    "start:api": "cd apps/api-server && npm run start",
+    "start:full": "cd apps/api-server && npm run start",
     "dev": "npm run dev:api",
     "dev:api": "cd apps/api-server && npm run dev",
     "dev:full": "cd apps/api-server && npm run dev:full",

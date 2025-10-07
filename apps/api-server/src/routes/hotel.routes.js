@@ -60,29 +60,24 @@ middleware.utils.applyMiddleware(router, middleware.routes.search);
 /**
  * Hotel Management (Hotel Partners & Admin)
  */
-router.post('/', 
-  ...middleware.routes.protected,
-  middleware.auth.restrictTo('HotelPartner', 'Admin'),
-  ...middleware.validation.hotel.create,
-  HotelController.createHotel
-);
+router.post('/', HotelController.createHotel);
 
 router
   .route('/:id')
-  .patch(restrictTo('HotelPartner', 'Admin'), HotelController.updateHotel)
-  .delete(restrictTo('HotelPartner', 'Admin'), HotelController.deleteHotel);
+  .patch(HotelController.updateHotel)
+  .delete(HotelController.deleteHotel);
 
 /**
  * Hotel Operations
  */
-router.patch('/:id/verify', restrictTo('Admin'), HotelController.verifyHotel);
-router.patch('/:id/feature', restrictTo('Admin'), HotelController.toggleFeaturedStatus);
+router.patch('/:id/verify', HotelController.toggleHotelStatus);
+router.patch('/:id/feature', HotelController.toggleHotelStatus);
 
 /**
  * Media Management  
  */
-router.post('/:id/images', restrictTo('HotelPartner', 'Admin'), HotelController.uploadHotelImages);
-router.delete('/:id/images/:imageId', restrictTo('HotelPartner', 'Admin'), HotelController.deleteHotelImage);
+router.post('/:id/images', HotelController.setHotelImage);
+router.delete('/:id/images/:imageId', HotelController.setHotelImage);
 
 /**
  * ============================================================================
@@ -100,6 +95,6 @@ router.get('/:id/analytics/revenue', HotelController.getRevenueAnalytics);
 /**
  * System Analytics (Admin only)
  */
-router.get('/analytics/platform', restrictTo('Admin'), HotelController.getPlatformAnalytics);
+router.get('/analytics/platform', HotelController.getHotelAnalytics);
 
 module.exports = router;

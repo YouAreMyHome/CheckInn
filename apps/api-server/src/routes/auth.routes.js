@@ -24,21 +24,55 @@ const router = express.Router();
 /**
  * User Registration & Login
  */
-router.post('/register', middleware.rateLimiting.auth, AuthController.register);
-router.post('/login', middleware.rateLimiting.auth, AuthController.login);
+router.post('/register', 
+  middleware.validation.validateRegister,
+  middleware.rateLimiting.auth, 
+  AuthController.register
+);
+
+router.post('/login', 
+  middleware.validation.validateLogin,
+  middleware.rateLimiting.auth, 
+  AuthController.login
+);
+
 router.post('/logout', AuthController.logout);
+
+/**
+ * Token Management
+ */
+router.post('/refresh-token', AuthController.refreshToken);
 
 /**
  * Password Management
  */
-router.post('/forgot-password', middleware.rateLimiting.auth, AuthController.forgotPassword);
-router.patch('/reset-password/:token', AuthController.resetPassword);
+router.post('/forgot-password', 
+  middleware.validation.validateEmail,
+  middleware.rateLimiting.auth, 
+  AuthController.forgotPassword
+);
+
+router.patch('/reset-password/:token', 
+  middleware.validation.validatePasswordReset,
+  AuthController.resetPassword
+);
+
+router.patch('/update-password', 
+  middleware.auth.protect,
+  middleware.validation.validatePasswordUpdate,
+  AuthController.updatePassword
+);
 
 /**
  * Account Verification
  */
 router.post('/verify-email', AuthController.verifyEmail);
-router.post('/resend-verification', middleware.rateLimiting.auth, AuthController.resendVerificationEmail);
+
+router.post('/resend-verification', 
+  middleware.validation.validateEmail,
+  middleware.rateLimiting.auth, 
+  AuthController.resendVerificationEmail
+);
 
 /**
  * Social Authentication (Future implementation)
@@ -48,23 +82,24 @@ router.post('/resend-verification', middleware.rateLimiting.auth, AuthController
 
 /**
  * ============================================================================
- * PROTECTED AUTHENTICATION ROUTES
+ * PROTECTED ROUTES
  * ============================================================================
  */
-
-// Apply authentication middleware for protected routes
-middleware.utils.applyMiddleware(router, middleware.bundles.authentication);
+router.use(middleware.auth.protect); // All routes after this middleware are protected
 
 /**
- * Current User Info
+ * User Profile Management (Protected)
  */
-router.get('/me', UserController.getMe);
-router.patch('/change-password', UserController.changePassword);
+router.get('/me', AuthController.getMe);
 
 /**
- * Session Management
+ * Account Management (Protected)  
  */
-router.post('/refresh-token', UserController.refreshToken);
-router.post('/validate-token', UserController.validateToken);
+router.patch('/update-me', 
+  middleware.validation.validateUserUpdate,
+  AuthController.updateMe
+);
+
+router.delete('/delete-me', AuthController.deleteMe);
 
 module.exports = router;

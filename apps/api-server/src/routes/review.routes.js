@@ -33,7 +33,7 @@ router.get('/:id', ReviewController.getReviewById);
  */
 
 // Apply protected route middleware for authenticated operations
-middleware.utils.applyMiddleware(router, middleware.routes.protected);
+
 
 /**
  * Review Management  

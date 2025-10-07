@@ -19,10 +19,10 @@ router.use('/health', healthRoutes);      // Health monitoring & diagnostics
 const express = require('express');
 const router = express.Router();
 
-// Import route modules - using simple versions for now
-const authRoutes = require('./auth.routes.simple');
-const userRoutes = require('./user.routes.simple');
-const healthRoutes = require('./health.routes.simple');
+// Import route modules - using main versions
+const authRoutes = require('./auth.routes');
+// const userRoutes = require('./user.routes');
+// const healthRoutes = require('./health.routes');
 // const hotelRoutes = require('./hotel.routes');
 // const roomRoutes = require('./room.routes');  
 // const bookingRoutes = require('./booking.routes');
@@ -47,14 +47,14 @@ router.get('/', (req, res) => {
   });
 });
 
-// Mount route modules - simple versions only for now
+// Mount route modules
 router.use('/auth', authRoutes);           // Authentication & authorization
-router.use('/users', userRoutes);         // User management
-router.use('/health', healthRoutes);      // Health monitoring & diagnostics
-// router.use('/hotels', hotelRoutes);       // Hotel operations
-// router.use('/rooms', roomRoutes);         // Room management
-// router.use('/bookings', bookingRoutes);   // Booking system
-// router.use('/reviews', reviewRoutes);     // Review system
+// router.use('/users', userRoutes);         // User management (commented until created)
+// router.use('/health', healthRoutes);      // Health monitoring (commented until created)
+// router.use('/hotels', hotelRoutes);       // Hotel operations (commented until created)
+// router.use('/rooms', roomRoutes);         // Room management (commented until created)
+// router.use('/bookings', bookingRoutes);   // Booking system (commented until created)
+// router.use('/reviews', reviewRoutes);     // Review system (commented until created)
 
 // Basic health check endpoint (lightweight)
 router.get('/status', (req, res) => {

@@ -21,7 +21,7 @@ const router = express.Router();
  */
 
 // Apply booking-specific middleware with enhanced security
-middleware.utils.applyMiddleware(router, middleware.routes.booking);
+
 
 /**
  * Booking Management

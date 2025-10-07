@@ -629,9 +629,54 @@ module.exports = {
   sanitizeHtml,
   validateRateLimit,
   
-  // Specific validators
-  validateUserRegistration: validate(userSchemas.register),
-  validateUserLogin: validate(userSchemas.login),
+  // Authentication validators
+  validateRegister: validate(userSchemas.register),
+  validateLogin: validate(userSchemas.login),
+  validateEmail: (req, res, next) => {
+    const emailSchema = Joi.object({
+      email: Joi.string().email().required()
+    });
+    
+    const { error, value } = emailSchema.validate(req.body);
+    if (error) {
+      return next(new AppError('Valid email is required', 400));
+    }
+    req.body = value;
+    next();
+  },
+  validatePasswordReset: (req, res, next) => {
+    const resetSchema = Joi.object({
+      password: Joi.string()
+        .min(8)
+        .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+        .required(),
+      passwordConfirm: Joi.string().valid(Joi.ref('password')).required()
+    });
+    
+    const { error, value } = resetSchema.validate(req.body);
+    if (error) {
+      return next(new AppError('Password validation failed', 400));
+    }
+    req.body = value;
+    next();
+  },
+  validatePasswordUpdate: (req, res, next) => {
+    const updateSchema = Joi.object({
+      passwordCurrent: Joi.string().required(),
+      password: Joi.string()
+        .min(8)
+        .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+        .required(),
+      passwordConfirm: Joi.string().valid(Joi.ref('password')).required()
+    });
+    
+    const { error, value } = updateSchema.validate(req.body);
+    if (error) {
+      return next(new AppError('Password update validation failed', 400));
+    }
+    req.body = value;
+    next();
+  },
   validateUserUpdate: validate(userSchemas.updateProfile),
   
   validateHotelCreate: validate(hotelSchemas.create),

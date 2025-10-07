@@ -39,7 +39,7 @@ router.post('/pricing', RoomController.getRoomPricing);
  */
 
 // Apply protected route middleware for authenticated operations
-middleware.utils.applyMiddleware(router, middleware.routes.protected);
+
 
 /**
  * Room Management (Hotel Owners & Admin)

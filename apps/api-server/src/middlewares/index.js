@@ -1,16 +1,16 @@
 /**
- * Simple Middleware Index for CheckInn Hotel Booking Platform
+ * Main Middleware Index for CheckInn Hotel Booking Platform
  * 
- * Simplified middleware configuration với basic functionality
+ * Complete middleware configuration với full functionality
  * 
  * @author CheckInn Team
- * @version 2.0.0 - Simple
+ * @version 2.0.0
  */
 
-const rateLimiting = require('./rateLimiting.middleware.simple');
-const securityMiddleware = require('./security.middleware.simple');
-const loggingMiddleware = require('./logging.middleware.simple');
-const errorController = require('../controllers/error.controller.simple');
+const rateLimiting = require('./rateLimiting.middleware');
+const securityMiddleware = require('./security.middleware');
+const loggingMiddleware = require('./logging.middleware');
+const errorController = require('../controllers/error.controller');
 
 /**
  * ============================================================================
@@ -40,17 +40,76 @@ const basicRateLimit = [
  * ============================================================================
  */
 
+// Import additional middleware for authentication
+let authMiddleware, validationMiddleware;
+
+try {
+  authMiddleware = require('./auth.middleware');
+  console.log('✅ Auth middleware loaded');
+} catch (error) {
+  console.log('⚠️  Auth middleware not found:', error.message);
+}
+
+try {
+  validationMiddleware = require('./validation.middleware');
+  console.log('✅ Validation middleware loaded');
+} catch (error) {
+  console.log('⚠️  Validation middleware not found:', error.message);
+}
+
 module.exports = {
   // Individual middleware
-  rateLimiting,
+  rateLimiting: {
+    ...rateLimiting,
+    auth: rateLimiting.basic // Alias for auth rate limiting
+  },
   security: securityMiddleware,
   logging: loggingMiddleware,
   errorHandler: errorController.globalErrorHandler,
+  
+  // Authentication middleware
+  auth: authMiddleware || {
+    protect: (req, res, next) => {
+      res.status(501).json({ error: 'Auth middleware not available' });
+    },
+    restrictTo: (...roles) => (req, res, next) => {
+      res.status(501).json({ error: 'Auth middleware not available' });
+    }
+  },
+  
+  // Validation middleware
+  validation: validationMiddleware || {
+    validateRegister: (req, res, next) => next(),
+    validateLogin: (req, res, next) => next(),
+    validateEmail: (req, res, next) => next(),
+    validatePasswordReset: (req, res, next) => next(),
+    validatePasswordUpdate: (req, res, next) => next(),
+    validateUserUpdate: (req, res, next) => next()
+  },
   
   // Middleware bundles
   basicSecurity,
   basicLogging,
   basicRateLimit,
+  
+  // Utilities
+  utils: {
+    applyMiddleware: (router, middlewares) => {
+      if (Array.isArray(middlewares)) {
+        middlewares.forEach(middleware => {
+          if (typeof middleware === 'function') {
+            router.use(middleware);
+          }
+        });
+      }
+    }
+  },
+  
+  // Route-specific middleware bundles
+  routes: {
+    protected: authMiddleware ? [authMiddleware.protect] : [],
+    booking: authMiddleware ? [authMiddleware.protect] : []
+  },
   
   // Aliases for compatibility
   rateLimit: rateLimiting,

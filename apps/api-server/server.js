@@ -21,7 +21,7 @@ const path = require('path');
 // Import database functions
 let connectDB, gracefulDisconnect;
 try {
-  const dbModule = require('./src/config/database.simple');
+  const dbModule = require('./src/config/database');
   connectDB = dbModule.connectDB;
   gracefulDisconnect = dbModule.gracefulDisconnect;
   console.log('✅ Database config loaded successfully');
@@ -174,6 +174,51 @@ app.get('/api/docs', (req, res) => {
  * ============================================================================
  */
 
+// Import routes
+let authRoutes, userRoutes, hotelRoutes, roomRoutes, bookingRoutes, reviewRoutes;
+
+try {
+  authRoutes = require('./src/routes/auth.routes');
+  console.log('✅ Auth routes loaded successfully');
+} catch (error) {
+  console.log('⚠️  Auth routes not found:', error.message);
+}
+
+try {
+  userRoutes = require('./src/routes/user.routes');
+  console.log('✅ User routes loaded successfully');
+} catch (error) {
+  console.log('⚠️  User routes not found:', error.message);
+}
+
+try {
+  hotelRoutes = require('./src/routes/hotel.routes');
+  console.log('✅ Hotel routes loaded successfully');
+} catch (error) {
+  console.log('⚠️  Hotel routes not found:', error.message);
+}
+
+try {
+  roomRoutes = require('./src/routes/room.routes');
+  console.log('✅ Room routes loaded successfully');
+} catch (error) {
+  console.log('⚠️  Room routes not found:', error.message);
+}
+
+try {
+  bookingRoutes = require('./src/routes/booking.routes');
+  console.log('✅ Booking routes loaded successfully');
+} catch (error) {
+  console.log('⚠️  Booking routes not found:', error.message);
+}
+
+try {
+  reviewRoutes = require('./src/routes/review.routes');
+  console.log('✅ Review routes loaded successfully');
+} catch (error) {
+  console.log('⚠️  Review routes not found:', error.message);
+}
+
 // Basic API endpoints
 app.get('/api', (req, res) => {
   res.json({
@@ -181,11 +226,48 @@ app.get('/api', (req, res) => {
     status: 'Active',
     endpoints: {
       health: '/health',
+      auth: '/api/auth/*',
+      users: '/api/users/*',
+      hotels: '/api/hotels/*',
+      rooms: '/api/rooms/*',
+      bookings: '/api/bookings/*',
+      reviews: '/api/reviews/*',
       api: '/api'
     },
     timestamp: new Date().toISOString()
   });
 });
+
+// Mount API routes
+if (authRoutes) {
+  app.use('/api/auth', authRoutes);
+  console.log('✅ Auth routes mounted at /api/auth');
+}
+
+if (userRoutes) {
+  app.use('/api/users', userRoutes);
+  console.log('✅ User routes mounted at /api/users');
+}
+
+if (hotelRoutes) {
+  app.use('/api/hotels', hotelRoutes);
+  console.log('✅ Hotel routes mounted at /api/hotels');
+}
+
+if (roomRoutes) {
+  app.use('/api/rooms', roomRoutes);
+  console.log('✅ Room routes mounted at /api/rooms');
+}
+
+if (bookingRoutes) {
+  app.use('/api/bookings', bookingRoutes);
+  console.log('✅ Booking routes mounted at /api/bookings');
+}
+
+if (reviewRoutes) {
+  app.use('/api/reviews', reviewRoutes);
+  console.log('✅ Review routes mounted at /api/reviews');
+}
 
 // Connect to MongoDB when server starts
 if (connectDB) {
