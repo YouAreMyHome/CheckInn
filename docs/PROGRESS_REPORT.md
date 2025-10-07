@@ -56,7 +56,7 @@ CheckInn/
 ├── apps/
 │   └── api-server/           ✅ Main backend application
 │       ├── server.js         ✅ Production server (WORKING)
-│       ├── server.simple.js  ✅ Development server  
+│       ├── server.js  ✅ Production server  
 │       ├── package.json      ✅ Dependencies managed
 │       └── src/
 │           ├── config/       ✅ Database & environment config
