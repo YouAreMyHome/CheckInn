@@ -1,367 +1,400 @@
 /**
  * Hotel Model for CheckInn Hotel Booking Platform
  * 
- * Schema phức tạp quản lý thông tin khách sạn với:
- * - Geospatial indexing cho tìm kiếm theo vị trí
- * - Full-text search cho tên và mô tả
- * - Business logic cho booking và rating
- * - Performance optimization với strategic indexing
+ * Business-focused schema với practical features
  * 
  * @author CheckInn Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
-/**
- * Sub-schema: Thông tin địa chỉ với geospatial support
- * Hỗ trợ tìm kiếm khách sạn gần nhất với MongoDB 2dsphere index
- */
+// Location Schema
 const locationSchema = new mongoose.Schema({
-  address: { type: String, required: true, trim: true }, // Địa chỉ chi tiết
-  city: { type: String, required: true, trim: true }, // Thành phố (indexed)
-  state: { type: String, trim: true }, // Tỉnh/Bang (optional)
-  country: { type: String, required: true, trim: true }, // Quốc gia
-  zipCode: { type: String, trim: true }, // Mã bưu điện
+  address: { 
+    type: String, 
+    required: [true, 'Address is required'],
+    trim: true 
+  },
+  city: { 
+    type: String, 
+    required: [true, 'City is required'],
+    trim: true,
+    index: true
+  },
+  country: { 
+    type: String, 
+    required: [true, 'Country is required'],
+    trim: true,
+    default: 'Vietnam'
+  },
   coordinates: {
-    type: [Number], // [longitude, latitude] - GeoJSON format
-    index: '2dsphere', // MongoDB geospatial index
+    type: [Number], // [longitude, latitude]
     validate: {
       validator: function(val) {
-        return val.length === 2;
+        return !val || val.length === 2;
       },
-      message: 'Coordinates must contain exactly 2 values [longitude, latitude]'
+      message: 'Coordinates must be [longitude, latitude]'
     }
-  },
-});
+  }
+}, { _id: false });
 
-/**
- * Sub-schema: Thông tin liên hệ khách sạn
- * Validation regex để đảm bảo format đúng
- */
+// Contact Schema
 const contactSchema = new mongoose.Schema({
   phone: { 
     type: String, 
-    required: true,
-    validate: {
-      validator: function(v) {
-        return /^\+?[\d\s\-\(\)]{10,}$/.test(v); // Regex cho phone format
-      },
-      message: 'Please provide a valid phone number'
-    }
+    required: [true, 'Phone number is required'],
+    trim: true
   },
   email: { 
     type: String, 
-    required: true,
-    lowercase: true, // Tự động chuyển chữ thường
-    validate: {
-      validator: function(v) {
-        return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v);
-      },
-      message: 'Please provide a valid email'
-    }
+    required: [true, 'Email is required'],
+    trim: true,
+    lowercase: true,
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Invalid email format']
   },
-  website: { type: String }, // URL website (optional)
-});
-
-/**
- * Sub-schema: Chính sách khách sạn
- * Quản lý check-in/out, hủy phòng, phụ phí
- */
-const policySchema = new mongoose.Schema({
-  checkIn: { type: String, default: '14:00' }, // Giờ check-in mặc định
-  checkOut: { type: String, default: '12:00' }, // Giờ check-out mặc định
-  
-  // Chính sách hủy phòng
-  cancellation: {
-    type: { type: String, enum: ['flexible', 'moderate', 'strict'], default: 'moderate' },
-    hoursBeforeCheckIn: { type: Number, default: 24 }, // Số giờ trước khi check-in
-    refundPercentage: { type: Number, min: 0, max: 100, default: 100 } // % hoàn tiền
-  },
-  
-  // Chính sách giường phụ
-  extraBed: {
-    available: { type: Boolean, default: false }, // Có cho phép giường phụ
-    price: { type: Number, default: 0 } // Giá giường phụ/đêm
-  },
-  
-  // Chính sách thú cưng
-  pet: {
-    allowed: { type: Boolean, default: false }, // Có cho phép thú cưng
-    fee: { type: Number, default: 0 } // Phí thú cưng/đêm
+  website: { 
+    type: String, 
+    trim: true,
+    match: [/^https?:\/\/.+/, 'Website must start with http:// or https://']
   }
-});
+}, { _id: false });
 
-/**
- * Main Hotel Schema
- * Schema chính quản lý tất cả thông tin khách sạn
- */
+// Amenity Schema
+const amenitySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  icon: { type: String },
+  category: { 
+    type: String, 
+    enum: ['general', 'business', 'recreation', 'dining', 'transport'],
+    default: 'general'
+  }
+}, { _id: false });
+
+// Image Schema
+const imageSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+  alt: { type: String },
+  caption: { type: String },
+  isPrimary: { type: Boolean, default: false }
+}, { _id: false });
+
+// Main Hotel Schema
 const hotelSchema = new mongoose.Schema({
-  // === THÔNG TIN CƠ BẢN ===
   name: {
     type: String,
     required: [true, 'Hotel name is required'],
     trim: true,
     maxlength: [100, 'Hotel name cannot exceed 100 characters'],
-    index: 'text' // Full-text search index
+    index: 'text'
   },
+  
   slug: {
     type: String,
-    unique: true, // URL-friendly identifier (auto-generated)
-    index: true
+    unique: true,
+    lowercase: true
   },
-  owner: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'User', // Reference to User model
-    required: [true, 'Hotel must have an owner'],
-    index: true // Indexed for owner queries
-  },
+  
   description: {
     type: String,
     required: [true, 'Description is required'],
     maxlength: [2000, 'Description cannot exceed 2000 characters'],
-    index: 'text' // Full-text search trên mô tả
+    index: 'text'
   },
+  
   shortDescription: {
     type: String,
     maxlength: [200, 'Short description cannot exceed 200 characters']
-    // Auto-generated từ description nếu không có
   },
   
-  // === HÌNH ẢNH ===
-  images: {
-    type: [{
-      url: { type: String, required: true }, // URL hình ảnh
-      caption: { type: String }, // Chú thích (optional)
-      isPrimary: { type: Boolean, default: false } // Ảnh chính
-    }],
-    validate: {
-      validator: function(arr) {
-        return arr.length >= 1 && arr.length <= 20; // 1-20 ảnh
-      },
-      message: 'Hotel must have between 1 and 20 images'
-    }
-  },
-  // === VỊ TRÍ VÀ LIÊN HỆ ===
-  location: {
-    type: locationSchema,
-    required: true,
-    index: '2dsphere' // Geospatial index cho tìm kiếm theo vị trí
-  },
-  contact: {
-    type: contactSchema,
-    required: true
-  },
-  
-  // === TIỆN ÍCH ===
-  amenities: [{
+  // Hotel Classification
+  category: {
     type: String,
-    enum: [
-      'wifi', 'parking', 'pool', 'gym', 'spa', 'restaurant', 'bar', 
-      'room-service', 'laundry', 'concierge', 'business-center', 
-      'meeting-rooms', 'airport-shuttle', 'pet-friendly', 'accessible'
-    ] // Danh sách tiện ích chuẩn
-  }],
-  // === ĐÁNH GIÁ VÀ XẾP HẠNG ===
+    enum: ['budget', 'business', 'luxury', 'resort', 'boutique'],
+    required: [true, 'Hotel category is required'],
+    index: true
+  },
+  
   starRating: {
     type: Number,
     min: [1, 'Star rating must be at least 1'],
     max: [5, 'Star rating cannot exceed 5'],
-    required: [true, 'Star rating is required'], // Hạng sao khách sạn (1-5)
-  },
-  averageRating: {
-    type: Number,
-    default: 0,
-    min: [0, 'Rating cannot be negative'],
-    max: [5, 'Rating cannot exceed 5'],
-    set: (val) => Math.round(val * 10) / 10, // Làm tròn 1 chữ số thập phân
-    index: true // Indexed cho sort theo rating
-  },
-  totalReviews: {
-    type: Number,
-    default: 0,
-    min: 0 // Tổng số đánh giá
+    required: [true, 'Star rating is required']
   },
   
-  // === GIÁ CẢ ===
+  // Location & Contact
+  location: {
+    type: locationSchema,
+    required: [true, 'Location information is required']
+  },
+  
+  contact: {
+    type: contactSchema,
+    required: [true, 'Contact information is required']
+  },
+  
+  // Media
+  images: [imageSchema],
+  
+  // Features & Amenities
+  amenities: [amenitySchema],
+  
+  // Pricing
   priceRange: {
-    min: { type: Number, default: 0, min: 0 }, // Giá thấp nhất
-    max: { type: Number, default: 0, min: 0 }, // Giá cao nhất
-    currency: { type: String, default: 'USD', enum: ['USD', 'EUR', 'VND', 'GBP'] }
+    min: {
+      type: Number,
+      required: [true, 'Minimum price is required'],
+      min: [0, 'Price cannot be negative']
+    },
+    max: {
+      type: Number,
+      required: [true, 'Maximum price is required'],
+      min: [0, 'Price cannot be negative']
+    }
   },
-  policies: policySchema, // Các chính sách khách sạn
   
-  // === TRẠNG THÁI ===
-  isActive: {
-    type: Boolean,
-    default: true, // Khách sạn có đang hoạt động
+  currency: {
+    type: String,
+    default: 'VND',
+    enum: ['VND', 'USD', 'EUR']
+  },
+  
+  // Business Status
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'pending', 'suspended'],
+    default: 'pending',
     index: true
   },
+  
   isVerified: {
     type: Boolean,
-    default: false, // Đã được admin xác thực chưa
+    default: false,
     index: true
   },
-  verificationDate: Date, // Ngày xác thực
   
-  // === THÔNG TIN PHÒNG ===
-  totalRooms: {
-    type: Number,
-    default: 0,
-    min: 0 // Tổng số phòng
-  },
-  availableRooms: {
-    type: Number,
-    default: 0,
-    min: 0 // Số phòng còn trống
+  isFeatured: {
+    type: Boolean,
+    default: false,
+    index: true
   },
   
-  // === PERFORMANCE TRACKING ===
-  views: {
-    type: Number,
-    default: 0 // Số lượt xem
+  // Analytics & Reviews
+  stats: {
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: [0, 'Rating cannot be negative'],
+      max: [5, 'Rating cannot exceed 5']
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
+      min: [0, 'Review count cannot be negative']
+    },
+    totalBookings: {
+      type: Number,
+      default: 0,
+      min: [0, 'Booking count cannot be negative']
+    },
+    responseRate: {
+      type: Number,
+      default: 0,
+      min: [0, 'Response rate cannot be negative'],
+      max: [100, 'Response rate cannot exceed 100']
+    }
   },
-  bookings: {
-    type: Number,
-    default: 0 // Số lượng đặt phòng
-  }
+  
+  // Business Information
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Hotel owner is required'],
+    index: true
+  },
+  
+  // Policies
+  policies: {
+    checkInTime: { type: String, default: '14:00' },
+    checkOutTime: { type: String, default: '12:00' },
+    cancellationPolicy: { 
+      type: String, 
+      enum: ['flexible', 'moderate', 'strict'],
+      default: 'moderate'
+    },
+    petPolicy: { 
+      type: String,
+      enum: ['allowed', 'not-allowed', 'conditional'],
+      default: 'not-allowed'
+    },
+    smokingPolicy: { 
+      type: String,
+      enum: ['allowed', 'not-allowed', 'designated-areas'],
+      default: 'not-allowed'
+    }
+  },
+  
+  // SEO & Marketing
+  seo: {
+    metaTitle: { type: String, maxlength: 60 },
+    metaDescription: { type: String, maxlength: 160 },
+    keywords: [String]
+  },
+  
 }, {
-  timestamps: true, // Tự động thêm createdAt, updatedAt
-  toJSON: { virtuals: true }, // Include virtuals khi convert to JSON
-  toObject: { virtuals: true }, // Include virtuals khi convert to Object
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-/**
- * PERFORMANCE INDEXES
- * Strategic indexing cho các query patterns phổ biến
- */
-
-// Full-text search index cho tìm kiếm khách sạn
+// Indexes for performance
+hotelSchema.index({ 'location.coordinates': '2dsphere' });
 hotelSchema.index({ name: 'text', description: 'text' });
+hotelSchema.index({ category: 1, starRating: -1 });
+hotelSchema.index({ status: 1, isVerified: 1 });
+hotelSchema.index({ 'stats.averageRating': -1 });
+hotelSchema.index({ isFeatured: -1, createdAt: -1 });
 
-// Compound index cho search theo city + rating
-hotelSchema.index({ 'location.city': 1, starRating: -1 });
-
-// Index cho sort theo rating và reviews
-hotelSchema.index({ averageRating: -1, totalReviews: -1 });
-
-// Index cho filter theo khoảng giá
-hotelSchema.index({ 'priceRange.min': 1, 'priceRange.max': 1 });
-
-// Index cho query khách sạn theo owner
-hotelSchema.index({ owner: 1, isActive: 1 });
-
-// Compound index cho listing khách sạn được xác thực
-hotelSchema.index({ isActive: 1, isVerified: 1, averageRating: -1 });
-
-/**
- * VIRTUAL FIELDS
- * Calculated fields không lưu trong database
- */
-
-// Virtual populate: Lấy danh sách phòng của khách sạn
-hotelSchema.virtual('rooms', {
+// Virtual for room count
+hotelSchema.virtual('roomCount', {
   ref: 'Room',
-  foreignField: 'hotel',
   localField: '_id',
-});
-
-// Virtual populate: Lấy 5 review mới nhất
-hotelSchema.virtual('reviews', {
-  ref: 'Review',
   foreignField: 'hotel',
+  count: true
+});
+
+// Virtual for available rooms
+hotelSchema.virtual('availableRooms', {
+  ref: 'Room',
   localField: '_id',
-  options: { sort: { createdAt: -1 }, limit: 5 }
+  foreignField: 'hotel',
+  match: { status: 'available' },
+  count: true
 });
 
-// Virtual field: Tỷ lệ lấp đầy phòng (tính theo %)
-hotelSchema.virtual('occupancyRate').get(function() {
-  if (this.totalRooms === 0) return 0;
-  return Math.round(((this.totalRooms - this.availableRooms) / this.totalRooms) * 100);
-});
-
-/**
- * PRE-SAVE MIDDLEWARE
- * Business logic chạy trước khi lưu document
- */
+// Pre-save middleware
 hotelSchema.pre('save', function(next) {
-  // Auto-generate slug từ tên khách sạn (URL-friendly)
-  if (this.isModified('name') || this.isNew) {
+  // Generate slug
+  if (this.isModified('name')) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
   
-  // Tự động tạo shortDescription từ description nếu chưa có
-  if (this.isModified('description') && !this.shortDescription) {
-    this.shortDescription = this.description.substring(0, 150) + '...';
+  // Validate price range
+  if (this.priceRange.min >= this.priceRange.max) {
+    return next(new Error('Maximum price must be greater than minimum price'));
   }
   
-  // Đảm bảo có ít nhất 1 ảnh chính (isPrimary)
-  if (this.images && this.images.length > 0) {
-    const hasPrimary = this.images.some(img => img.isPrimary);
-    if (!hasPrimary) {
-      this.images[0].isPrimary = true; // Set ảnh đầu tiên làm ảnh chính
-    }
+  // Auto-generate short description
+  if (!this.shortDescription && this.description) {
+    this.shortDescription = this.description.substring(0, 197) + '...';
   }
   
   next();
 });
 
-/**
- * STATIC METHOD: Tìm khách sạn gần nhất
- * Sử dụng MongoDB $geoNear aggregation với 2dsphere index
- * 
- * @param {number} longitude - Kinh độ
- * @param {number} latitude - Vĩ độ 
- * @param {number} radiusInKm - Bán kính tìm kiếm (km), mặc định 10km
- * @param {object} options - Filter bổ sung
- * @returns {Promise} - Array khách sạn với khoảng cách
- */
-hotelSchema.statics.findNearby = function(longitude, latitude, radiusInKm = 10, options = {}) {
-  const pipeline = [
-    {
-      $geoNear: {
-        near: {
-          type: 'Point',
-          coordinates: [parseFloat(longitude), parseFloat(latitude)]
-        },
-        distanceField: 'distance', // Thêm field distance vào kết quả
-        maxDistance: radiusInKm * 1000, // Convert km -> meters
-        spherical: true, // Tính toán trên hình cầu (Trái Đất)
-        query: { isActive: true, isVerified: true, ...options } // Chỉ lấy KS active & verified
-      }
+// Instance methods
+hotelSchema.methods.updateRating = async function() {
+  const stats = await mongoose.model('Review').aggregate([
+    { $match: { hotel: this._id } },
+    { 
+      $group: { 
+        _id: null, 
+        avgRating: { $avg: '$rating' }, 
+        count: { $sum: 1 } 
+      } 
     }
-  ];
+  ]);
   
-  return this.aggregate(pipeline);
+  if (stats.length > 0) {
+    this.stats.averageRating = Math.round(stats[0].avgRating * 10) / 10;
+    this.stats.totalReviews = stats[0].count;
+  } else {
+    this.stats.averageRating = 0;
+    this.stats.totalReviews = 0;
+  }
+  
+  return this.save();
 };
 
-/**
- * INSTANCE METHOD: Tính khoảng cách đến 1 điểm
- * Sử dụng công thức Haversine để tính khoảng cách trên hình cầu
- * 
- * @param {number} longitude - Kinh độ đích
- * @param {number} latitude - Vĩ độ đích
- * @returns {number} - Khoảng cách tính theo km
- */
-hotelSchema.methods.distanceTo = function(longitude, latitude) {
-  const R = 6371; // Bán kính Trái Đất (km)
-  
-  // Convert độ sang radian
-  const dLat = (latitude - this.location.coordinates[1]) * Math.PI / 180;
-  const dLon = (longitude - this.location.coordinates[0]) * Math.PI / 180;
-  
-  // Haversine formula
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(this.location.coordinates[1] * Math.PI / 180) * 
-    Math.cos(latitude * Math.PI / 180) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  
-  return R * c; // Khoảng cách theo km
+hotelSchema.methods.addBooking = function() {
+  this.stats.totalBookings += 1;
+  return this.save();
 };
 
-const Hotel = mongoose.model('Hotel', hotelSchema);
+hotelSchema.methods.isOwner = function(userId) {
+  return this.owner.toString() === userId.toString();
+};
 
-module.exports = Hotel;
+// Static methods
+hotelSchema.statics.findNearby = function(coordinates, maxDistance = 10000) {
+  return this.find({
+    'location.coordinates': {
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates: coordinates
+        },
+        $maxDistance: maxDistance
+      }
+    },
+    status: 'active'
+  });
+};
+
+hotelSchema.statics.search = function(query, options = {}) {
+  const {
+    category,
+    minRating = 0,
+    maxPrice,
+    minPrice,
+    city,
+    amenities,
+    limit = 20,
+    skip = 0,
+    sortBy = '-stats.averageRating'
+  } = options;
+  
+  const filter = { status: 'active' };
+  
+  // Text search
+  if (query) {
+    filter.$text = { $search: query };
+  }
+  
+  // Category filter
+  if (category) {
+    filter.category = category;
+  }
+  
+  // Rating filter
+  if (minRating > 0) {
+    filter['stats.averageRating'] = { $gte: minRating };
+  }
+  
+  // Price filter
+  if (minPrice || maxPrice) {
+    filter.$or = [];
+    if (minPrice) filter.$or.push({ 'priceRange.min': { $gte: minPrice } });
+    if (maxPrice) filter.$or.push({ 'priceRange.max': { $lte: maxPrice } });
+  }
+  
+  // City filter
+  if (city) {
+    filter['location.city'] = new RegExp(city, 'i');
+  }
+  
+  // Amenities filter
+  if (amenities && amenities.length > 0) {
+    filter['amenities.name'] = { $in: amenities };
+  }
+  
+  return this.find(filter)
+    .sort(sortBy)
+    .limit(limit)
+    .skip(skip)
+    .populate('owner', 'name email')
+    .select('-__v');
+};
+
+module.exports = mongoose.model('Hotel', hotelSchema);
