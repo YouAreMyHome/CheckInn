@@ -1,57 +1,77 @@
 # 🏨 CheckInn - Website Đặt Phòng Khách Sạn 
 
 **Repository**: https://github.com/YouAreMyHome/CheckInn.git  
-**Version**: 2.0.0 | **Status**: ✅ Backend Core Complete
+**Version**: 2.0.0 | **Status**: ✅ Full Stack Application Ready
 
 ## 🚀 Quick Start (Run from Root Directory)
 
 ```bash
-# Install dependencies (first time)
-npm run install:all
+# 📦 Install all dependencies (first time)
+npm install
 
-# Start development server
-npm start
+# 🔥 Run both Frontend + Backend (Development)
+npm run dev
 
-# Start full production server  
-npm run server
+# 🚀 Run individual servers
+npm run dev:api        # Only API Server (port 5000)
+npm run dev:frontend   # Only Frontend (port 5173)
 
-# Health check
-npm run health
+# 🏭 Production mode
+npm run start:full     # Both servers in production
 
-# View API info
-npm run api:info
+# 🔧 Utilities
+npm run health        # Check API server health
+npm run info          # Show project information
+npm run test:health   # Detailed health check
 ```
 
-**Server URL**: http://localhost:5000  
-**API Documentation**: http://localhost:5000/api
+**🌐 Application URLs:**
+- **Frontend**: http://localhost:5173
+- **API Server**: http://localhost:5000  
+- **API Documentation**: http://localhost:5000/api
 
-## 🏗️ Project Structure (New & Organized)
+## 🏗️ Project Structure (Full Stack Application)
 
-```
+```bash
 CheckInn/
-├── 📁 apps/                      # Applications
-│   ├── admin-dashboard/         # 👨‍💼 Admin Management Portal
-│   ├── client-app/             # 👥 Customer Booking Portal
-│   ├── partner-portal/         # 🤝 Hotel Partner Portal
-│   ├── customer-app/           # 📱 Customer Mobile App
-│   └── api-server/             # 🔧 Backend API Server
+├── 📁 apps/                      # Applications (✅ Ready)
+│   ├── api-server/             # � Backend API Server (✅ Complete)
+│   └── frontend/               # � Customer Portal React App (✅ Complete)
 │
 ├── 📁 packages/                 # Shared Packages
-│   ├── shared-ui/             # 🎨 Shared UI Components
+│   ├── shared-ui/             # 🎨 Shared UI Components  
 │   ├── shared-utils/          # 🛠️ Common Utilities
 │   ├── api-client/            # 📡 API Client Library
 │   └── types/                 # 📝 TypeScript Definitions
 │
 ├── 📁 docs/                    # Documentation
 │   ├── api/                   # API Documentation
-│   ├── guides/                # Development Guides
+│   ├── guides/                # Development Guides  
 │   ├── architecture/          # System Architecture
 │   └── deployment/            # Deployment Guides
 │
+├── 📁 config/                  # Shared Configuration
 ├── 📁 scripts/                 # Build & Deployment Scripts
 ├── 📁 tools/                   # Development Tools
 └── 📄 Root Configuration Files
 ```
+
+## ✅ **Current Status & Features**
+
+### 🔧 **Backend API Server** (100% Complete)
+- ✅ Express.js + MongoDB + JWT Authentication
+- ✅ 13 API endpoints with full CRUD operations
+- ✅ Hotel Management System with business logic
+- ✅ User roles: Customer, Hotel Manager, Admin
+- ✅ Advanced features: Pagination, filtering, sorting
+- ✅ Security: Rate limiting, validation, sanitization
+
+### 🌐 **Frontend Customer Portal** (85% Complete)  
+- ✅ React + Vite + Tailwind CSS + React Router
+- ✅ Complete booking flow: Search → Details → Booking → Confirmation
+- ✅ Authentication with real API integration
+- ✅ Responsive design with modern UI/UX
+- ✅ Real-time hotel search with filters and sorting
 
 ## 🚀 Quick Start
 
@@ -62,19 +82,61 @@ CheckInn/
 - MongoDB >= 5.0
 - Git
 
-### Installation
+### Installation & Setup
 
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/YouAreMyHome/CheckInn.git
 cd CheckInn
 
-# Install all dependencies
-npm run install:all
+# Install all dependencies (root + apps/api-server + apps/frontend)
+npm install
 
-# Start development servers
+# Start development servers (both frontend + backend)
 npm run dev
 ```
+
+### 🎯 **Available Commands**
+
+```bash
+# 🚀 Development (recommended)
+npm run dev              # Start both frontend + backend
+npm run dev:api          # Only API server (port 5000)
+npm run dev:frontend     # Only frontend (port 5173)
+
+# 🏭 Production
+npm run start:full       # Both servers in production mode
+npm run start:api        # Only API server  
+npm run frontend         # Only frontend server
+
+# 📦 Installation
+npm install              # Install all workspaces
+npm run install:all      # Install each directory separately
+npm run install:api      # Install only API server deps
+npm run install:frontend # Install only frontend deps
+
+# 🔧 Build & Deploy  
+npm run build           # Build both applications
+npm run build:api       # Build API server
+npm run build:frontend  # Build frontend
+
+# 🧹 Maintenance
+npm run clean           # Clean all node_modules
+npm run clean:cache     # Clean build cache (Vite, etc.)
+npm run reset           # Clean + reinstall everything
+
+# 📊 Monitoring
+npm run health          # Quick API health check
+npm run test:health     # Detailed health check  
+npm run info            # Show project information
+```
+
+### 🌍 **Development URLs**
+
+- **Frontend (Customer Portal)**: <http://localhost:5173>
+- **Backend API Server**: <http://localhost:5000>  
+- **API Documentation**: <http://localhost:5000/api>
+- **Health Check**: <http://localhost:5000/health>
 
 ## 📱 Applications
 
