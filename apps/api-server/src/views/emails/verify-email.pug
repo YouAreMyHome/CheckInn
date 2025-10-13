@@ -1,0 +1,138 @@
+extends _layout
+
+block content
+  table.email-wrapper(width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;margin:0 auto;background:#fff")
+    tr
+      td
+        // Rainbow bar
+        table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(90deg,#FF6B6B,#4ECDC4,#45B7D1,#96CEB4,#FFEAA7);height:6px")
+          tr
+            td
+        
+        // Header
+        table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#667eea,#764ba2);padding:40px 20px;text-align:center")
+          tr
+            td
+              h1(style="color:#fff;font-size:32px;font-weight:700;margin:0;text-shadow:0 2px 10px rgba(0,0,0,0.3)") CheckInn
+              p(style="color:rgba(255,255,255,0.9);font-size:14px;margin:8px 0 0;letter-spacing:2px;text-transform:uppercase") Verify Your Email
+        
+        // Hero Section - Email Verification
+        table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#f093fb,#f5576c);padding:50px 30px;text-align:center")
+          tr
+            td
+              div(style="font-size:80px;margin-bottom:20px") 📧
+              h2(style="color:#fff;font-size:28px;font-weight:700;margin:0 0 15px;text-shadow:0 2px 10px rgba(0,0,0,0.3)") 
+                | Xác thực Email của bạn
+                br
+                | Verify Your Email Address
+              p(style="color:rgba(255,255,255,0.95);font-size:16px;margin:0;line-height:1.6")
+                | Chỉ còn một bước nữa để hoàn tất đăng ký!
+                br
+                | Just one more step to complete your registration!
+
+        // Content Section
+        table(width="100%" cellpadding="0" cellspacing="0" style="padding:50px 40px")
+          tr
+            td
+              p(style="font-size:18px;color:#2d3748;margin:0 0 25px;font-weight:500")
+                | Xin chào #{firstName}! 👋
+                br
+                | Hello #{firstName}!
+              
+              p(style="font-size:16px;line-height:1.7;color:#4a5568;margin:0 0 30px")
+                | Cảm ơn bạn đã đăng ký tài khoản CheckInn. Để đảm bảo an toàn và bảo mật cho tài khoản của bạn, vui lòng xác thực địa chỉ email bằng cách nhấn vào nút bên dưới.
+                br
+                br
+                | Thank you for signing up for CheckInn. To ensure the security of your account, please verify your email address by clicking the button below.
+
+              // Security Notice
+              table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#e0f2fe,#dbeafe);border-radius:16px;padding:25px;margin:30px 0")
+                tr
+                  td
+                    div(style="text-align:center;font-size:40px;margin-bottom:15px") 🔐
+                    h3(style="color:#1e40af;font-size:18px;font-weight:600;margin:0 0 12px;text-align:center")
+                      | Tại sao cần xác thực email?
+                      br
+                      | Why verify your email?
+                    ul(style="list-style:none;padding:0;margin:0;text-align:left")
+                      li(style="color:#1e3a8a;font-size:15px;margin:8px 0;padding-left:25px;position:relative")
+                        span(style="position:absolute;left:0") ✓
+                        | Bảo vệ tài khoản của bạn / Protect your account
+                      li(style="color:#1e3a8a;font-size:15px;margin:8px 0;padding-left:25px;position:relative")
+                        span(style="position:absolute;left:0") ✓
+                        | Nhận thông báo quan trọng / Receive important notifications
+                      li(style="color:#1e3a8a;font-size:15px;margin:8px 0;padding-left:25px;position:relative")
+                        span(style="position:absolute;left:0") ✓
+                        | Khôi phục mật khẩu dễ dàng / Easy password recovery
+                      li(style="color:#1e3a8a;font-size:15px;margin:8px 0;padding-left:25px;position:relative")
+                        span(style="position:absolute;left:0") ✓
+                        | Truy cập đầy đủ tính năng / Full feature access
+
+              // CTA Button
+              table(width="100%" cellpadding="0" cellspacing="0" style="text-align:center;margin:40px 0")
+                tr
+                  td
+                    a(href="#{verificationUrl}" style="display:inline-block;background:linear-gradient(135deg,#ff6b6b,#ee5a6f);color:#fff;text-decoration:none;padding:18px 50px;border-radius:50px;font-weight:600;font-size:18px;box-shadow:0 10px 25px rgba(255,107,107,0.3);text-shadow:0 2px 5px rgba(0,0,0,0.2)")
+                      | 🚀 Xác Thực Email Ngay / Verify Email Now
+
+              // Alternative Link
+              table(width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:12px;padding:25px;margin:35px 0")
+                tr
+                  td
+                    p(style="font-size:14px;color:#4a5568;margin:0 0 12px;text-align:center;font-weight:600")
+                      | Hoặc copy link này vào trình duyệt:
+                      br
+                      | Or copy this link to your browser:
+                    p(style="font-size:13px;color:#667eea;margin:0;text-align:center;word-break:break-all;line-height:1.6")
+                      | #{verificationUrl}
+
+              // Expiry Notice
+              table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;padding:20px;margin:30px 0;border-left:4px solid #f59e0b")
+                tr
+                  td
+                    div(style="text-align:center;font-size:30px;margin-bottom:10px") ⏰
+                    p(style="font-size:15px;color:#92400e;margin:0;text-align:center;font-weight:600")
+                      | ⚠️ Link này sẽ hết hạn sau 24 giờ
+                      br
+                      | This link will expire in 24 hours
+                    p(style="font-size:13px;color:#78350f;margin:10px 0 0;text-align:center")
+                      | Nếu hết hạn, bạn có thể yêu cầu gửi lại email xác thực
+                      br
+                      | If expired, you can request a new verification email
+
+              // Help Section
+              p(style="font-size:15px;color:#4a5568;margin:40px 0 0;line-height:1.6;text-align:center")
+                | Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này.
+                br
+                | If you didn't create this account, please ignore this email.
+                br
+                br
+                | Cần hỗ trợ? Liên hệ 
+                a(href="mailto:support@checkinn.com" style="color:#667eea;text-decoration:none;font-weight:600") support@checkinn.com
+                br
+                | Need help? Contact 
+                a(href="mailto:support@checkinn.com" style="color:#667eea;text-decoration:none;font-weight:600") support@checkinn.com
+
+        // Footer
+        table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#2d3748,#4a5568);padding:40px;text-align:center")
+          tr
+            td
+              h3(style="color:#fff;font-size:24px;font-weight:700;margin:0 0 8px") CheckInn
+              p(style="color:rgba(255,255,255,0.7);font-size:14px;margin:0 0 25px") Điểm đến của mọi hành trình | Your Journey's Destination
+              
+              // Social Links
+              table(width="100%" cellpadding="0" cellspacing="0" style="margin:25px 0")
+                tr
+                  td(style="text-align:center")
+                    a(href="#" style="display:inline-block;width:40px;height:40px;background:rgba(255,255,255,0.1);border-radius:50%;color:#fff;text-decoration:none;line-height:40px;margin:0 8px;font-weight:600") f
+                    a(href="#" style="display:inline-block;width:40px;height:40px;background:rgba(255,255,255,0.1);border-radius:50%;color:#fff;text-decoration:none;line-height:40px;margin:0 8px;font-weight:600") i
+                    a(href="#" style="display:inline-block;width:40px;height:40px;background:rgba(255,255,255,0.1);border-radius:50%;color:#fff;text-decoration:none;line-height:40px;margin:0 8px;font-weight:600") t
+                    a(href="#" style="display:inline-block;width:40px;height:40px;background:rgba(255,255,255,0.1);border-radius:50%;color:#fff;text-decoration:none;line-height:40px;margin:0 8px;font-weight:600") y
+              
+              p(style="color:rgba(255,255,255,0.8);font-size:14px;margin:20px 0 0")
+                | 📧 support@checkinn.com | 📞 +84 123 456 789
+              
+              p(style="color:rgba(255,255,255,0.5);font-size:12px;margin:25px 0 0;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1)")
+                | © 2025 CheckInn. All rights reserved.
+                br
+                | This is an automated email. Please do not reply.

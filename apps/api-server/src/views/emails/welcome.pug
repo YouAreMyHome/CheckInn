@@ -1,0 +1,207 @@
+extends _layout
+
+block content
+  table.email-wrapper(width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;margin:0 auto;background:#fff")
+    tr
+      td
+        // Rainbow bar
+        table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(90deg,#FF6B6B,#4ECDC4,#45B7D1,#96CEB4,#FFEAA7)")
+          tr
+            td(style="height:6px")
+        
+        // Header
+        table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#667eea,#764ba2);padding:40px 20px;text-align:center")
+          tr
+            td
+              h1(style="font-family:'Playfair Display',serif;font-size:48px;color:#fff;margin:0;text-shadow:0 2px 10px rgba(0,0,0,0.3)") CheckInn
+              p(style="color:rgba(255,255,255,0.9);font-size:14px;margin:10px 0 0;letter-spacing:3px;text-transform:uppercase") Your Journey Begins Here
+        
+        // Hero Banner
+        table(width="100%" cellpadding="0" cellspacing="0" style="position:relative;height:320px;background:linear-gradient(135deg,#667eea,#764ba2)")
+          tr
+            td(style="position:relative;text-align:center;vertical-align:middle;padding:40px 20px")
+              div(style="position:relative;z-index:10")
+                div(style="font-size:72px;margin-bottom:20px") 🎉
+                h2(style="font-family:'Playfair Display',serif;font-size:36px;color:#fff;margin:0 0 15px;text-shadow:0 2px 15px rgba(0,0,0,0.3);line-height:1.2") Chào mừng đến với CheckInn!
+                  br
+                  span(style="font-size:28px") Welcome to CheckInn!
+                p(style="font-size:18px;color:rgba(255,255,255,0.95);margin:0") Hành trình tuyệt vời bắt đầu từ đây
+                  br
+                  span(style="font-size:16px") Your amazing journey starts here ✈️
+        
+        // Main Content
+        table(width="100%" cellpadding="0" cellspacing="0" style="padding:50px 30px")
+          tr
+            td
+              p(style="font-size:20px;font-weight:600;color:#2D3748;text-align:center;margin:0 0 20px") Xin chào #{firstName}! 👋
+                br
+                span(style="font-size:18px") Dear #{firstName}!
+              
+              p(style="font-size:16px;line-height:1.8;color:#4A5568;text-align:center;margin:0 0 40px") Chúng tôi vô cùng vui mừng chào đón bạn đến với cộng đồng CheckInn - nơi những trải nghiệm lưu trú tuyệt vời trở thành hiện thực!
+                br
+                br
+                span(style="color:#718096") We're thrilled to welcome you to CheckInn - where amazing travel experiences come true!
+              
+              // Feature Title  
+              h3(style="font-size:28px;font-weight:700;color:#2D3748;text-align:center;margin:40px 0 30px") ✨ Tính năng nổi bật
+                br
+                span(style="font-size:24px") Amazing Features
+              
+              table(width="100%" cellpadding="15" cellspacing="0")
+                tr
+                  // Feature 1
+                  td(width="50%" style="vertical-align:top")
+                    table(width="100%" cellpadding="20" cellspacing="0" style="background:linear-gradient(135deg,#f6f8fb,#fff);border-radius:20px;border:2px solid #E2E8F0;text-align:center")
+                      tr
+                        td
+                          div(style="font-size:56px;margin-bottom:15px") 🏨
+                          p(style="font-size:18px;font-weight:700;color:#2D3748;margin:0 0 8px") Khách sạn chất lượng
+                          p(style="font-size:14px;color:#718096;margin:0") Premium Hotels
+                          p(style="font-size:13px;color:#A0AEC0;margin:5px 0 0") Hàng nghìn lựa chọn
+                  
+                  // Feature 2
+                  td(width="50%" style="vertical-align:top")
+                    table(width="100%" cellpadding="20" cellspacing="0" style="background:linear-gradient(135deg,#f6f8fb,#fff);border-radius:20px;border:2px solid #E2E8F0;text-align:center")
+                      tr
+                        td
+                          div(style="font-size:56px;margin-bottom:15px") 💰
+                          p(style="font-size:18px;font-weight:700;color:#2D3748;margin:0 0 8px") Giá tốt nhất
+                          p(style="font-size:14px;color:#718096;margin:0") Best Prices
+                          p(style="font-size:13px;color:#A0AEC0;margin:5px 0 0") Đảm bảo giá
+
+                tr
+                  // Feature 3
+                  td(width="50%" style="vertical-align:top;padding-top:15px")
+                    table(width="100%" cellpadding="20" cellspacing="0" style="background:linear-gradient(135deg,#f6f8fb,#fff);border-radius:20px;border:2px solid #E2E8F0;text-align:center")
+                      tr
+                        td
+                          div(style="font-size:56px;margin-bottom:15px") ⭐
+                          p(style="font-size:18px;font-weight:700;color:#2D3748;margin:0 0 8px") Đánh giá thật
+                          p(style="font-size:14px;color:#718096;margin:0") Real Reviews
+                          p(style="font-size:13px;color:#A0AEC0;margin:5px 0 0") Từ khách thực tế
+                  
+                  // Feature 4
+                  td(width="50%" style="vertical-align:top;padding-top:15px")
+                    table(width="100%" cellpadding="20" cellspacing="0" style="background:linear-gradient(135deg,#f6f8fb,#fff);border-radius:20px;border:2px solid #E2E8F0;text-align:center")
+                      tr
+                        td
+                          div(style="font-size:56px;margin-bottom:15px") 🎯
+                          p(style="font-size:18px;font-weight:700;color:#2D3748;margin:0 0 8px") Hỗ trợ 24/7
+                          p(style="font-size:14px;color:#718096;margin:0") 24/7 Support
+                          p(style="font-size:13px;color:#A0AEC0;margin:5px 0 0") Luôn sẵn sàng
+        
+        // CTA Section
+        table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53,#FFA07A);padding:60px 30px;text-align:center")
+          tr
+            td
+              div(style="font-size:64px;margin-bottom:20px") 🚀
+              h3(style="font-family:'Playfair Display',serif;font-size:32px;color:#fff;margin:0 0 15px;text-shadow:0 2px 10px rgba(0,0,0,0.2)") Bắt đầu khám phá ngay!
+                br
+                span(style="font-size:28px") Start Exploring Now!
+              p(style="font-size:16px;color:rgba(255,255,255,0.95);margin:0 0 35px") Hàng nghìn khách sạn tuyệt vời đang chờ bạn
+                br
+                | Thousands of amazing hotels await you
+              
+              a(href="#{url}" style="display:inline-block;background:#fff;color:#FF6B6B;text-decoration:none;padding:18px 50px;border-radius:50px;font-size:18px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,0.2)") 
+                | 🔥 Khám Phá Ngay / Explore Now
+        
+        // Benefits
+        table(width="100%" cellpadding="0" cellspacing="0" style="padding:50px 30px")
+          tr
+            td
+              h3(style="font-size:28px;font-weight:700;color:#2D3748;text-align:center;margin:0 0 35px") 🎁 Đặc quyền thành viên
+                br
+                span(style="font-size:24px") Member Benefits
+              
+              // Benefit 1
+              table(width="100%" cellpadding="25" cellspacing="0" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;margin-bottom:15px")
+                tr
+                  td(width="60" style="font-size:36px;color:#fff") ✨
+                  td(style="color:#fff")
+                    p(style="font-size:18px;font-weight:700;margin:0 0 5px") Ưu đãi độc quyền
+                    p(style="font-size:14px;margin:0;opacity:0.9") Exclusive deals & special discounts
+              
+              // Benefit 2
+              table(width="100%" cellpadding="25" cellspacing="0" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;margin-bottom:15px")
+                tr
+                  td(width="60" style="font-size:36px;color:#fff") 🎁
+                  td(style="color:#fff")
+                    p(style="font-size:18px;font-weight:700;margin:0 0 5px") Tích điểm thưởng
+                    p(style="font-size:14px;margin:0;opacity:0.9") Loyalty rewards program
+              
+              // Benefit 3
+              table(width="100%" cellpadding="25" cellspacing="0" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;margin-bottom:15px")
+                tr
+                  td(width="60" style="font-size:36px;color:#fff") 📞
+                  td(style="color:#fff")
+                    p(style="font-size:18px;font-weight:700;margin:0 0 5px") Hỗ trợ ưu tiên
+                    p(style="font-size:14px;margin:0;opacity:0.9") Priority support hotline
+              
+              // Benefit 4
+              table(width="100%" cellpadding="25" cellspacing="0" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px")
+                tr
+                  td(width="60" style="font-size:36px;color:#fff") 🌟
+                  td(style="color:#fff")
+                    p(style="font-size:18px;font-weight:700;margin:0 0 5px") Nâng cấp miễn phí
+                    p(style="font-size:14px;margin:0;opacity:0.9") Free room upgrades
+        
+        // Tips Section
+        table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#FFEAA7,#FDCB6E);padding:50px 30px")
+          tr
+            td
+              h3(style="font-size:28px;font-weight:700;color:#2D3748;text-align:center;margin:0 0 30px") 💡 Mẹo vàng / Golden Tips
+              
+              table(width="100%" cellpadding="0" cellspacing="0")
+                tr
+                  td(width="50%" style="padding:10px;vertical-align:top")
+                    table(width="100%" cellpadding="20" cellspacing="0" style="background:rgba(255,255,255,0.95);border-radius:16px")
+                      tr
+                        td
+                          div(style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:50%;text-align:center;line-height:32px;font-weight:700;margin-bottom:12px") 1
+                          p(style="font-size:14px;color:#2D3748;margin:0;line-height:1.6") Hoàn thiện hồ sơ / Complete your profile
+                  
+                  td(width="50%" style="padding:10px;vertical-align:top")
+                    table(width="100%" cellpadding="20" cellspacing="0" style="background:rgba(255,255,255,0.95);border-radius:16px")
+                      tr
+                        td
+                          div(style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:50%;text-align:center;line-height:32px;font-weight:700;margin-bottom:12px") 2
+                          p(style="font-size:14px;color:#2D3748;margin:0;line-height:1.6") Đăng ký nhận thông báo / Subscribe notifications
+                
+                tr
+                  td(width="50%" style="padding:10px;vertical-align:top")
+                    table(width="100%" cellpadding="20" cellspacing="0" style="background:rgba(255,255,255,0.95);border-radius:16px")
+                      tr
+                        td
+                          div(style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:50%;text-align:center;line-height:32px;font-weight:700;margin-bottom:12px") 3
+                          p(style="font-size:14px;color:#2D3748;margin:0;line-height:1.6") Tải app CheckInn / Download app
+                  
+                  td(width="50%" style="padding:10px;vertical-align:top")
+                    table(width="100%" cellpadding="20" cellspacing="0" style="background:rgba(255,255,255,0.95);border-radius:16px")
+                      tr
+                        td
+                          div(style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:50%;text-align:center;line-height:32px;font-weight:700;margin-bottom:12px") 4
+                          p(style="font-size:14px;color:#2D3748;margin:0;line-height:1.6") Bật thông báo flash sale / Enable flash sale alerts
+        
+        // Footer
+        table(width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#2D3748,#1A202C);padding:50px 30px;text-align:center;color:#fff")
+          tr
+            td
+              h2(style="font-family:'Playfair Display',serif;font-size:32px;margin:0 0 10px") CheckInn
+              p(style="font-size:14px;color:rgba(255,255,255,0.7);margin:0 0 30px;letter-spacing:2px;text-transform:uppercase") Your Journey's Destination
+              
+              div(style="width:80px;height:3px;background:linear-gradient(90deg,#667eea,#764ba2);margin:0 auto 30px;border-radius:2px")
+              
+              p(style="font-size:14px;color:rgba(255,255,255,0.8);margin:8px 0") 📧 support@checkinn.com
+              p(style="font-size:14px;color:rgba(255,255,255,0.8);margin:8px 0") 📞 +84 123 456 789
+              
+              div(style="margin:30px 0;padding:20px 0;border-top:1px solid rgba(255,255,255,0.1);border-bottom:1px solid rgba(255,255,255,0.1)")
+                p(style="font-size:16px;font-weight:600;margin:0 0 15px") 🌐 Kết nối / Connect
+                div
+                  a(href="#" style="display:inline-block;width:44px;height:44px;background:rgba(255,255,255,0.1);border-radius:50%;color:#fff;text-decoration:none;line-height:44px;margin:0 8px;font-size:18px") f
+                  a(href="#" style="display:inline-block;width:44px;height:44px;background:rgba(255,255,255,0.1);border-radius:50%;color:#fff;text-decoration:none;line-height:44px;margin:0 8px;font-size:18px") i
+                  a(href="#" style="display:inline-block;width:44px;height:44px;background:rgba(255,255,255,0.1);border-radius:50%;color:#fff;text-decoration:none;line-height:44px;margin:0 8px;font-size:18px") t
+                  a(href="#" style="display:inline-block;width:44px;height:44px;background:rgba(255,255,255,0.1);border-radius:50%;color:#fff;text-decoration:none;line-height:44px;margin:0 8px;font-size:18px") y
+              
+              p(style="font-size:12px;color:rgba(255,255,255,0.5);margin:20px 0 0;line-height:1.6") ⚠️ Nếu bạn không tạo tài khoản này, vui lòng liên hệ với chúng tôi.
+                br
+                | If you didn't create this account, please contact us.

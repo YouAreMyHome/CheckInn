@@ -1,0 +1,174 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title CheckInn - Your Journey Begins Here
+    style.
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap');
+      
+      /* Reset & Base */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: #f0f4f8;
+        padding: 20px 0;
+        margin: 0;
+      }
+      
+      .container {
+        max-width: 650px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        position: relative;
+      }
+      
+      .container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+      }
+      
+      .brand-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .brand-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
+        animation: float 20s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateX(-10px) translateY(-10px); }
+        50% { transform: translateX(10px) translateY(10px); }
+      }
+      
+      .logo {
+        position: relative;
+        z-index: 2;
+      }
+      
+      .logo h1 {
+        color: white;
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        letter-spacing: 1px;
+      }
+      
+      .tagline {
+        color: rgba(255,255,255,0.9);
+        font-size: 14px;
+        font-weight: 300;
+        margin-top: 8px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      
+      .content-section {
+        padding: 50px 40px;
+        background: white;
+      }
+      
+      .greeting {
+        font-size: 18px;
+        color: #2d3748;
+        margin-bottom: 25px;
+        font-weight: 500;
+      }
+      
+      .main-text {
+        font-size: 16px;
+        line-height: 1.7;
+        color: #4a5568;
+        margin-bottom: 35px;
+      }
+      
+      .footer {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        padding: 40px;
+        text-align: center;
+        color: white;
+      }
+      
+      .footer-brand {
+        margin-bottom: 25px;
+      }
+      
+      .footer-logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 8px;
+      }
+      
+      .footer-tagline {
+        font-size: 14px;
+        color: rgba(255,255,255,0.7);
+        font-weight: 300;
+      }
+      
+      .footer-content {
+        margin-bottom: 30px;
+      }
+      
+      .footer-text {
+        font-size: 14px;
+        color: rgba(255,255,255,0.8);
+        margin-bottom: 8px;
+      }
+      
+      .footer-link {
+        color: #90cdf4;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      
+      .footer-link:hover {
+        color: #63b3ed;
+      }
+      
+      /* Mobile responsive */
+      @media (max-width: 600px) {
+        .email-wrapper {
+          padding: 20px 10px;
+        }
+        
+        .container {
+          border-radius: 16px;
+        }
+        
+        .brand-header, .content-section, .footer {
+          padding: 25px 20px;
+        }
+      }
+
+  body
+    .email-wrapper
+      .container
+        block content

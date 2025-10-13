@@ -6,7 +6,7 @@ import HotelDetailPage from './pages/HotelDetailPage';
 import BookingPage from './pages/BookingPage';
 import BookingConfirmationPage from './pages/BookingConfirmationPage';
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import MultiStepRegisterPage from './pages/MultiStepRegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import BookingsPage from './pages/BookingsPage';
 
@@ -15,7 +15,7 @@ const CustomerPortal = () => {
     <Routes>
       {/* Auth routes (no layout) */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/register" element={<MultiStepRegisterPage />} />
       
       {/* Main app routes (with layout) */}
       <Route path="/*" element={

@@ -10,18 +10,21 @@ import AdminPortal from './portals/admin/AdminPortal';
 import CustomerLayout from './portals/customer/components/CustomerLayout';
 import HomePage from './portals/customer/pages/HomePage';
 import LoginPage from './portals/customer/pages/LoginPage';
-import RegisterPage from './portals/customer/pages/RegisterPage';
+// import RegisterPage from './portals/customer/pages/RegisterPage'; // Old version - backed up as RegisterPage.old.jsx
+import MultiStepRegisterPage from './portals/customer/pages/MultiStepRegisterPage';
 import SearchPage from './portals/customer/pages/SearchPage';
 import HotelDetailPage from './portals/customer/pages/HotelDetailPage';
 import BookingPage from './portals/customer/pages/BookingPage';
 import ProfilePage from './portals/customer/pages/ProfilePage';
+import ForgotPasswordPage from './portals/customer/pages/ForgotPasswordPage';
 
 // Auth Components
 import { AuthProvider } from './shared/context/AuthContext.jsx';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 
 // Shared Components
-import ErrorBoundary from './shared/components/ErrorBoundary';
+import ErrorBoundary from './shared/components/ErrorBoundarySimple';
+import TestPage from './TestPage';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -41,16 +44,23 @@ function App() {
           <AuthProvider>
             <div className="min-h-screen bg-gray-50">
               <Routes>
+                {/* Test Route */}
+                <Route path="/test" element={<TestPage />} />
+                
                 {/* Customer Portal Routes */}
                 <Route path="/" element={<CustomerLayout />}>
                   <Route index element={<HomePage />} />
-                  <Route path="login" element={<LoginPage />} />
-                  <Route path="register" element={<RegisterPage />} />
                   <Route path="search" element={<SearchPage />} />
                   <Route path="hotel/:id" element={<HotelDetailPage />} />
                   <Route path="booking" element={<BookingPage />} />
                   <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                 </Route>
+                
+                {/* Auth Routes - Outside CustomerLayout for full-page design */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<MultiStepRegisterPage />} />
+                {/* Old single-step registration backed up as RegisterPage.old.jsx */}
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 
                 {/* Hotel Manager Portal - Protected */}
                 <Route 

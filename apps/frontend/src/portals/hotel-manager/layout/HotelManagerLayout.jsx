@@ -21,8 +21,9 @@ const HotelManagerLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    logout(() => {
+      navigate('/login');
+    });
   };
 
   const navigation = [

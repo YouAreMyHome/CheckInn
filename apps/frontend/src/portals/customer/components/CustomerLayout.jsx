@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Outlet } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../../shared/hooks/useAuth';
 import { Search, Menu, X, User, LogOut, Settings, Calendar } from 'lucide-react';
 
-const CustomerLayout = ({ children }) => {
+const CustomerLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate('/customer');
+    logout(() => {
+      navigate('/login');
+    });
     setIsUserMenuOpen(false);
   };
 
@@ -22,8 +24,8 @@ const CustomerLayout = ({ children }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to="/customer" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">C</span>
               </div>
               <span className="text-xl font-bold text-gray-900">CheckInn</span>
@@ -31,14 +33,14 @@ const CustomerLayout = ({ children }) => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
-              <Link to="/customer" className="text-gray-700 hover:text-gray-900 font-medium">
+              <Link to="/" className="text-gray-700 hover:text-gray-900 font-medium">
                 Home
               </Link>
-              <Link to="/customer/search" className="text-gray-700 hover:text-gray-900 font-medium">
+              <Link to="/search" className="text-gray-700 hover:text-gray-900 font-medium">
                 Search Hotels
               </Link>
               {isAuthenticated && (
-                <Link to="/customer/bookings" className="text-gray-700 hover:text-gray-900 font-medium">
+                <Link to="/bookings" className="text-gray-700 hover:text-gray-900 font-medium">
                   My Bookings
                 </Link>
               )}
@@ -58,10 +60,17 @@ const CustomerLayout = ({ children }) => {
                     <span className="font-medium">{user?.name}</span>
                   </button>
 
-                  {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  <AnimatePresence>
+                    {isUserMenuOpen && (
+                      <motion.div 
+                        className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
                       <Link
-                        to="/customer/profile"
+                        to="/profile"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
@@ -69,7 +78,7 @@ const CustomerLayout = ({ children }) => {
                         Profile Settings
                       </Link>
                       <Link
-                        to="/customer/bookings"
+                        to="/bookings"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
@@ -83,19 +92,20 @@ const CustomerLayout = ({ children }) => {
                         <LogOut className="h-4 w-4 mr-2" />
                         Sign Out
                       </button>
-                    </div>
-                  )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               ) : (
                 <div className="flex items-center space-x-4">
                   <Link
-                    to="/customer/login"
+                    to="/login"
                     className="text-gray-700 hover:text-gray-900 font-medium"
                   >
                     Sign In
                   </Link>
                   <Link
-                    to="/customer/register"
+                    to="/register"
                     className="btn-primary"
                   >
                     Sign Up
@@ -114,18 +124,30 @@ const CustomerLayout = ({ children }) => {
           </div>
 
           {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-gray-200">
-              <div className="flex flex-col space-y-2">
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div 
+                className="md:hidden py-4 border-t border-gray-200"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div 
+                  className="flex flex-col space-y-2"
+                  initial={{ y: -10 }}
+                  animate={{ y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
                 <Link
-                  to="/customer"
+                  to="/"
                   className="text-gray-700 hover:text-gray-900 font-medium py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Home
                 </Link>
                 <Link
-                  to="/customer/search"
+                  to="/search"
                   className="text-gray-700 hover:text-gray-900 font-medium py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -133,22 +155,23 @@ const CustomerLayout = ({ children }) => {
                 </Link>
                 {isAuthenticated && (
                   <Link
-                    to="/customer/bookings"
+                    to="/bookings"
                     className="text-gray-700 hover:text-gray-900 font-medium py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     My Bookings
                   </Link>
                 )}
-              </div>
-            </div>
-          )}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1">
-        {children}
+        <Outlet />
       </main>
 
       {/* Footer */}

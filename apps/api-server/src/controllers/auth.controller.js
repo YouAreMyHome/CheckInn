@@ -50,6 +50,9 @@ const createSendToken = (user, statusCode, res) => {
 exports.register = catchAsync(async (req, res, next) => {
   const { name, email, phone, password, role } = req.body;
 
+  // Log incoming data for debugging
+  console.log('Registration attempt:', { name, email, phone, role, passwordLength: password?.length });
+
   // 1) Check if user already exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -57,19 +60,36 @@ exports.register = catchAsync(async (req, res, next) => {
   }
 
   // 2) Create new user
-  const newUser = await User.create({
-    name,
-    email,
-    phone,
-    password,
-    role,
-  });
-
-  // 3) Generate token and send response
-  createSendToken(newUser, 201, res);
+  try {
+    const newUser = await User.create({
+      name,
+      email,
+      phone,
+      password,
+      role,
+    });
+    
+    // 3) Send welcome email (don't wait for it to complete)
+    const welcomeURL = `${req.protocol}://${req.get('host')}/verify-email`;
+    sendWelcomeEmail(newUser, welcomeURL).catch(error => {
+      console.error('Error sending welcome email:', error);
+      // Don't fail registration if email fails
+    });
+    
+    // 4) Generate token and send response
+    createSendToken(newUser, 201, res);
+  } catch (error) {
+    console.error('User creation error:', error);
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return next(new AppError(`Validation failed: ${validationErrors.join(', ')}`, 400));
+    }
+    return next(error);
+  }
 });
 
 exports.login = catchAsync(async (req, res, next) => {
+  console.log('Login request body:', req.body);
   const { email, password } = req.body;
 
   // 1) Check if email and password exist

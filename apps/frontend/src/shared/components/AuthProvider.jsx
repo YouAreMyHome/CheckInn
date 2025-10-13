@@ -1,6 +1,6 @@
 import { useReducer, useEffect } from 'react';
 import { authService } from '../services/authService';
-import { AuthContext } from '../context/AuthContextProvider';
+import { AuthContext } from '../context/AuthContext';
 
 // Auth reducer
 const authReducer = (state, action) => {

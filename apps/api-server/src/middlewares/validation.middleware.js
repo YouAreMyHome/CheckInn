@@ -47,23 +47,22 @@ const userSchemas = {
     password: Joi.string()
       .min(8)
       .max(128)
-      .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
       .required()
       .messages({
-        'string.pattern.base': 'Password must contain at least one uppercase letter, lowercase letter, number and special character',
-        'string.min': 'Password must be at least 8 characters'
+        'string.min': 'Password must be at least 8 characters',
+        'string.max': 'Password cannot exceed 128 characters'
       }),
     
     phone: Joi.string()
       .pattern(/^(\+84|84|0)(3|5|7|8|9)[0-9]{8}$/)
-      .optional()
+      .required()
       .messages({
         'string.pattern.base': 'Please provide a valid Vietnamese phone number'
       }),
     
     role: Joi.string()
-      .valid('Guest', 'HotelPartner', 'Admin')
-      .default('Guest'),
+      .valid('Customer', 'HotelPartner', 'Admin')
+      .default('Customer'),
     
     dateOfBirth: Joi.date()
       .max('now')
@@ -447,6 +446,9 @@ const validate = (schema, property = 'body') => {
     // Get data to validate
     const dataToValidate = req[property];
     
+    // Log validation attempt
+    console.log(`Validation for ${property}:`, dataToValidate);
+    
     // Validate data
     const { error, value } = schema.validate(dataToValidate, {
       abortEarly: false,
@@ -461,6 +463,8 @@ const validate = (schema, property = 'body') => {
         message: detail.message,
         value: detail.context?.value
       }));
+
+      console.log('Validation errors:', errors);
 
       // Track validation failure
       await ActivityTracker.trackActivity({

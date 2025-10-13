@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { AuthContext } from './AuthContextProvider';
+import { useState, useEffect, createContext } from 'react';
 import { authService } from '../services';
+
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -37,9 +38,9 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (loginData) => {
     try {
-      const response = await authService.login({ email, password });
+      const response = await authService.login(loginData);
       if (response.success) {
         localStorage.setItem('token', response.data.token);
         setUser(response.data.user);
@@ -69,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = async (onSuccess) => {
     try {
       await authService.logout();
     } catch (error) {
@@ -78,6 +79,11 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('token');
       setUser(null);
       setIsAuthenticated(false);
+      
+      // Call success callback if provided
+      if (onSuccess && typeof onSuccess === 'function') {
+        onSuccess();
+      }
     }
   };
 

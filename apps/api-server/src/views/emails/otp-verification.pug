@@ -1,0 +1,141 @@
+extends _layout
+
+block content
+  table.email-wrapper(width="100%" cellpadding="0" cellspacing="0" style="margin: 0; padding: 0; width: 100%; background-color: #f8f9fa;")
+    tr
+      td(align="center" style="padding: 0;")
+        //- Rainbow Bar
+        table(width="100%" cellpadding="0" cellspacing="0" style="margin: 0; padding: 0;")
+          tr
+            td(style="background: linear-gradient(90deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%); height: 6px;")
+        
+        //- Main Content Container
+        table.main-content(width="600" cellpadding="0" cellspacing="0" style="margin: 20px auto; background: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;")
+          
+          //- Header với Logo
+          tr
+            td(align="center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px;")
+              h1(style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.1);") CheckInn
+              p(style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500;") Đặt Phòng Khách Sạn Dễ Dàng
+          
+          //- Hero Section với OTP
+          tr
+            td(align="center" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 40px 20px;")
+              div(style="font-size: 64px; line-height: 1; margin-bottom: 16px;") 🔐
+              h2(style="margin: 0 0 12px 0; color: #ffffff; font-size: 28px; font-weight: 700;") 
+                | Mã Xác Thực OTP
+                br
+                span(style="font-size: 20px; font-weight: 500;") Verification Code
+              p(style="margin: 0; color: rgba(255,255,255,0.95); font-size: 16px;") 
+                | Nhập mã bên dưới để hoàn tất đăng ký
+                br
+                span(style="font-size: 14px;") Enter the code below to complete registration
+          
+          //- Greeting
+          tr
+            td(style="padding: 40px 40px 20px 40px;")
+              p(style="margin: 0; font-size: 16px; color: #2d3748; line-height: 1.6;")
+                | Xin chào 
+                strong(style="color: #667eea;")= firstName
+                | ,
+                br
+                span(style="font-size: 14px; color: #718096;") Hello #{firstName},
+          
+          //- OTP Code Display
+          tr
+            td(align="center" style="padding: 0 40px 30px 40px;")
+              //- Intro text
+              p(style="margin: 0 0 24px 0; font-size: 15px; color: #4a5568; line-height: 1.6;")
+                | Đây là mã OTP của bạn để xác thực email:
+                br
+                span(style="font-size: 13px; color: #718096;") This is your OTP code to verify your email:
+              
+              //- OTP Code Box
+              table(width="100%" cellpadding="0" cellspacing="0" style="margin: 0 auto; max-width: 320px;")
+                tr
+                  td(align="center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);")
+                    div(style="font-size: 42px; font-weight: 700; color: #ffffff; letter-spacing: 12px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); font-family: 'Courier New', monospace;")= otpCode
+              
+              //- Expiry notice
+              p(style="margin: 20px 0 0 0; font-size: 14px; color: #e53e3e; font-weight: 600;")
+                | ⏰ Mã này sẽ hết hạn sau 
+                strong 5 phút
+                br
+                span(style="font-size: 12px; color: #fc8181;") This code expires in 5 minutes
+          
+          //- Instructions Section
+          tr
+            td(style="padding: 0 40px 30px 40px;")
+              //- Security Notice Box
+              table(width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 12px; border-left: 4px solid #f6ad55;")
+                tr
+                  td(style="padding: 20px;")
+                    p(style="margin: 0 0 12px 0; font-size: 15px; color: #744210; font-weight: 600;")
+                      | 🛡️ Hướng dẫn sử dụng / Instructions:
+                    ul(style="margin: 0; padding-left: 20px; color: #744210; font-size: 14px; line-height: 1.8;")
+                      li
+                        | Nhập mã này vào trang đăng ký
+                        br
+                        span(style="font-size: 12px; color: #975a16;") Enter this code on the registration page
+                      li
+                        | Mã chỉ có hiệu lực trong 5 phút
+                        br
+                        span(style="font-size: 12px; color: #975a16;") Code is valid for 5 minutes only
+                      li
+                        | Bạn có tối đa 5 lần thử
+                        br
+                        span(style="font-size: 12px; color: #975a16;") You have maximum 5 attempts
+                      li
+                        | Không chia sẻ mã này với bất kỳ ai
+                        br
+                        span(style="font-size: 12px; color: #975a16;") Do not share this code with anyone
+          
+          //- Not You Section
+          tr
+            td(align="center" style="padding: 0 40px 30px 40px;")
+              table(width="100%" cellpadding="0" cellspacing="0" style="background: #f7fafc; border-radius: 8px; border: 1px solid #e2e8f0;")
+                tr
+                  td(style="padding: 20px; text-align: center;")
+                    p(style="margin: 0; font-size: 14px; color: #4a5568; line-height: 1.6;")
+                      | Bạn không yêu cầu mã này?
+                      br
+                      span(style="font-size: 12px; color: #718096;") Didn't request this code?
+                      br
+                      br
+                      | Có thể ai đó đã nhập nhầm email của bạn. Bạn có thể bỏ qua email này một cách an toàn.
+                      br
+                      span(style="font-size: 12px; color: #718096;") Someone may have entered your email by mistake. You can safely ignore this email.
+          
+          //- Help Section
+          tr
+            td(align="center" style="padding: 0 40px 40px 40px;")
+              p(style="margin: 0; font-size: 14px; color: #718096; line-height: 1.6;")
+                | Cần hỗ trợ? / Need help?
+                br
+                | Email: 
+                a(href="mailto:support@checkinn.com" style="color: #667eea; text-decoration: none; font-weight: 600;") support@checkinn.com
+                br
+                | Hotline: 
+                strong(style="color: #2d3748;") 1900-xxxx
+          
+          //- Footer
+          tr
+            td(align="center" style="background: #f7fafc; padding: 30px 20px; border-top: 1px solid #e2e8f0;")
+              //- Social Links
+              table(cellpadding="0" cellspacing="0" style="margin: 0 auto 20px auto;")
+                tr
+                  td(style="padding: 0 10px;")
+                    a(href="#" style="text-decoration: none; color: #667eea; font-size: 24px;") 📘
+                  td(style="padding: 0 10px;")
+                    a(href="#" style="text-decoration: none; color: #667eea; font-size: 24px;") 🐦
+                  td(style="padding: 0 10px;")
+                    a(href="#" style="text-decoration: none; color: #667eea; font-size: 24px;") 📷
+                  td(style="padding: 0 10px;")
+                    a(href="#" style="text-decoration: none; color: #667eea; font-size: 24px;") 💼
+              
+              p(style="margin: 0 0 8px 0; font-size: 13px; color: #718096;")
+                | © 2024 CheckInn Hotel Booking. All rights reserved.
+              p(style="margin: 0; font-size: 12px; color: #a0aec0;")
+                | 123 Đường ABC, Quận XYZ, TP.HCM, Việt Nam
+                br
+                | This is an automated email, please do not reply.

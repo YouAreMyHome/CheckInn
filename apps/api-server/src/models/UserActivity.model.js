@@ -225,7 +225,7 @@ const userActivitySchema = new mongoose.Schema({
       'contact_form', 'newsletter_signup',
       
       // Errors & Issues
-      'error_404', 'error_500', 'javascript_error', 'api_error',
+      'error_404', 'error_500', 'javascript_error', 'api_error', 'validation_error',
       
       // Security
       'suspicious_activity', 'rate_limit_hit', 'failed_login'

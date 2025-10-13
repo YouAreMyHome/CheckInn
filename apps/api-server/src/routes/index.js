@@ -21,6 +21,7 @@ const router = express.Router();
 
 // Import route modules - using main versions
 const authRoutes = require('./auth.routes');
+const registrationRoutes = require('./registration.routes');
 // const userRoutes = require('./user.routes');
 // const healthRoutes = require('./health.routes');
 // const hotelRoutes = require('./hotel.routes');
@@ -35,6 +36,7 @@ router.get('/', (req, res) => {
     status: 'Active',
     endpoints: {
       authentication: '/api/auth',
+      registration: '/api/register',
       users: '/api/users',
       health: '/api/health'
       // hotels: '/api/hotels',
@@ -48,8 +50,9 @@ router.get('/', (req, res) => {
 });
 
 // Mount route modules
-router.use('/auth', authRoutes);           // Authentication & authorization
-// router.use('/users', userRoutes);         // User management (commented until created)
+router.use('/auth', authRoutes);                      // Authentication & authorization
+router.use('/register', registrationRoutes);          // Multi-step registration
+// router.use('/users', userRoutes);                  // User management (commented until created)
 // router.use('/health', healthRoutes);      // Health monitoring (commented until created)
 // router.use('/hotels', hotelRoutes);       // Hotel operations (commented until created)
 // router.use('/rooms', roomRoutes);         // Room management (commented until created)

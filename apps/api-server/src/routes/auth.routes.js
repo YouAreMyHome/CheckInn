@@ -31,7 +31,7 @@ router.post('/register',
 );
 
 router.post('/login', 
-  middleware.validation.validateLogin,
+  // middleware.validation.validateLogin,  // Temporarily disabled for debugging
   middleware.rateLimiting.auth, 
   AuthController.login
 );
