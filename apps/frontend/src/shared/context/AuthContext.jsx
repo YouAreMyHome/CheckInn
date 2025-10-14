@@ -12,15 +12,51 @@ export const AuthProvider = ({ children }) => {
     const initializeAuth = async () => {
       try {
         const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+        
         if (token) {
-          // Verify token and get user data
-          const response = await authService.getMe();
-          if (response.success) {
-            setUser(response.data);
-            setIsAuthenticated(true);
-          } else {
-            // Token is invalid, remove it
+          // First check if we have user data in localStorage
+          if (storedUser) {
+            try {
+              // Handle potential double-quoted JSON strings
+              let cleanUserData = storedUser;
+              if (storedUser.startsWith('"') && storedUser.endsWith('"')) {
+                cleanUserData = storedUser.slice(1, -1);
+              }
+              
+              const userData = JSON.parse(cleanUserData);
+              console.log('AuthContext - Restored user from localStorage:', userData);
+              setUser(userData);
+              setIsAuthenticated(true);
+              setLoading(false);
+              return;
+            } catch (parseError) {
+              console.error('Error parsing stored user data:', parseError);
+              console.error('Stored user data was:', storedUser);
+              localStorage.removeItem('user');
+            }
+          }
+          
+          // If no stored user data, try to get from API
+          try {
+            const response = await authService.getMe();
+            if (response.success) {
+              setUser(response.data);
+              setIsAuthenticated(true);
+              // Store user data for future use
+              localStorage.setItem('user', JSON.stringify(response.data));
+            } else {
+              // Token is invalid, remove it
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              setUser(null);
+              setIsAuthenticated(false);
+            }
+          } catch (apiError) {
+            console.error('API getMe error:', apiError);
+            // API call failed, clear auth state
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
             setUser(null);
             setIsAuthenticated(false);
           }
@@ -28,6 +64,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         console.error('Auth initialization error:', error);
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -91,6 +128,26 @@ export const AuthProvider = ({ children }) => {
     setUser(prev => ({ ...prev, ...userData }));
   };
 
+  const refreshAuthState = () => {
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+    
+    if (token && storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        setIsAuthenticated(true);
+        console.log('AuthContext - Refreshed auth state:', userData);
+      } catch (error) {
+        console.error('Error refreshing auth state:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -98,7 +155,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    updateUser
+    updateUser,
+    refreshAuthState
   };
 
   return (

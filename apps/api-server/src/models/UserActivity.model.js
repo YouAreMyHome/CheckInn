@@ -204,7 +204,8 @@ const userActivitySchema = new mongoose.Schema({
     required: true,
     enum: [
       // Authentication
-      'login', 'logout', 'register', 'password_reset',
+      'login', 'logout', 'register', 'password_reset', 'auth_success', 'failed_login',
+      'login_failed', 'password_reset_requested', 'password_reset_failed', 'password_reset_completed',
       
       // Navigation
       'page_view', 'page_leave', 'navigation',
@@ -226,9 +227,15 @@ const userActivitySchema = new mongoose.Schema({
       
       // Errors & Issues
       'error_404', 'error_500', 'javascript_error', 'api_error', 'validation_error',
+      'error_occurred', 'dev_error',
       
-      // Security
-      'suspicious_activity', 'rate_limit_hit', 'failed_login'
+      // Security & Monitoring
+      'suspicious_activity', 'rate_limit_hit', 'suspicious_login_blocked',
+      'unauthorized_access_attempt', 'authorized_access', 'unauthorized_resource_access',
+      'permission_denied', 'auth_rate_limit_hit', 'access_denied',
+      
+      // Performance Monitoring
+      'slow_request', 'large_response'
     ],
     index: true
   },

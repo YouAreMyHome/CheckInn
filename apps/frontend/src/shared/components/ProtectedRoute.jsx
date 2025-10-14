@@ -10,15 +10,34 @@ const LoadingSpinner = () => (
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, user, loading } = useAuth();
 
+  // Debug logging
+  console.log('ProtectedRoute - Auth State:', {
+    isAuthenticated,
+    user,
+    loading,
+    allowedRoles,
+    userRole: user?.role
+  });
+
   if (loading) {
+    console.log('ProtectedRoute - Still loading...');
     return <LoadingSpinner />;
   }
 
   if (!isAuthenticated) {
+    // Redirect to appropriate login page based on required role
+    if (allowedRoles.includes('Admin')) {
+      return <Navigate to="/admin/login" replace />;
+    }
     return <Navigate to="/customer/login" replace />;
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+    // If admin role required but user isn't admin, redirect to admin login
+    if (allowedRoles.includes('Admin') && user?.role !== 'Admin') {
+      return <Navigate to="/admin/login" replace />;
+    }
+    
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

@@ -25,6 +25,7 @@ import ProtectedRoute from './shared/components/ProtectedRoute';
 // Shared Components
 import ErrorBoundary from './shared/components/ErrorBoundarySimple';
 import TestPage from './TestPage';
+import AdminAuthDemo from './portals/admin/components/AdminAuthDemo';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -44,8 +45,9 @@ function App() {
           <AuthProvider>
             <div className="min-h-screen bg-gray-50">
               <Routes>
-                {/* Test Route */}
+                {/* Test Routes */}
                 <Route path="/test" element={<TestPage />} />
+                <Route path="/admin-auth-demo" element={<AdminAuthDemo />} />
                 
                 {/* Customer Portal Routes */}
                 <Route path="/" element={<CustomerLayout />}>
@@ -72,14 +74,10 @@ function App() {
                   } 
                 />
                 
-                {/* Admin Portal - Admin only */}
+                {/* Admin Portal - Handles its own auth */}
                 <Route 
                   path="/admin/*" 
-                  element={
-                    <ProtectedRoute allowedRoles={['Admin']}>
-                      <AdminPortal />
-                    </ProtectedRoute>
-                  } 
+                  element={<AdminPortal />} 
                 />
                 
                 {/* 404 Page */}

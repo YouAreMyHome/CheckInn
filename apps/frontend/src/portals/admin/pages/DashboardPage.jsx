@@ -1,41 +1,187 @@
 import { useAuth } from '../../../shared/hooks/useAuth';
-import { Users, Building2, CheckCircle, AlertTriangle, BarChart3, Shield } from 'lucide-react';
+import { 
+  Users, 
+  Building2, 
+  CheckCircle, 
+  AlertTriangle, 
+  BarChart3, 
+  Shield,
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+  DollarSign,
+  Star,
+  Clock,
+  MapPin,
+  Phone,
+  Mail,
+  Activity,
+  Eye,
+  UserCheck,
+  Zap
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update time every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const stats = [
-    { name: 'Total Users', value: '2,847', icon: Users, change: '+12%', changeType: 'positive' },
-    { name: 'Active Hotels', value: '156', icon: Building2, change: '+8%', changeType: 'positive' },
-    { name: 'Pending Verifications', value: '23', icon: CheckCircle, change: '+5', changeType: 'neutral' },
-    { name: 'Security Alerts', value: '3', icon: AlertTriangle, change: '-2', changeType: 'positive' },
+    { 
+      name: 'Total Users', 
+      value: '2,847', 
+      icon: Users, 
+      change: '+12%', 
+      changeType: 'positive',
+      description: 'Active registered users'
+    },
+    { 
+      name: 'Active Hotels', 
+      value: '156', 
+      icon: Building2, 
+      change: '+8%', 
+      changeType: 'positive',
+      description: 'Verified hotel partners'
+    },
+    { 
+      name: 'Monthly Revenue', 
+      value: '$47,890', 
+      icon: DollarSign, 
+      change: '+15.3%', 
+      changeType: 'positive',
+      description: 'Commission earnings'
+    },
+    { 
+      name: 'Security Alerts', 
+      value: '3', 
+      icon: AlertTriangle, 
+      change: '-2', 
+      changeType: 'positive',
+      description: 'Active security issues'
+    },
   ];
 
   const recentActivity = [
-    { id: 1, type: 'user_registration', message: 'New user John Doe registered', time: '2 hours ago' },
-    { id: 2, type: 'hotel_verification', message: 'Grand Hotel verification completed', time: '4 hours ago' },
-    { id: 3, type: 'security_alert', message: 'Multiple login attempts detected', time: '6 hours ago' },
-    { id: 4, type: 'review_reported', message: 'Review reported for inappropriate content', time: '8 hours ago' },
+    { 
+      id: 1, 
+      type: 'user_registration', 
+      icon: UserCheck,
+      message: 'New user John Doe registered', 
+      time: '2 hours ago',
+      status: 'success' 
+    },
+    { 
+      id: 2, 
+      type: 'hotel_verification', 
+      icon: Building2,
+      message: 'Grand Hotel verification completed', 
+      time: '4 hours ago',
+      status: 'success' 
+    },
+    { 
+      id: 3, 
+      type: 'security_alert', 
+      icon: Shield,
+      message: 'Multiple login attempts detected', 
+      time: '6 hours ago',
+      status: 'warning' 
+    },
+    { 
+      id: 4, 
+      type: 'review_reported', 
+      icon: AlertTriangle,
+      message: 'Review reported for inappropriate content', 
+      time: '8 hours ago',
+      status: 'danger' 
+    },
+    {
+      id: 5,
+      type: 'payment_processed',
+      icon: DollarSign,
+      message: 'Payment of $2,340 processed successfully',
+      time: '12 hours ago',
+      status: 'success'
+    }
   ];
 
   const pendingActions = [
-    { id: 1, title: 'Hotel Verification', description: 'Oceanview Resort pending approval', priority: 'high' },
-    { id: 2, title: 'User Report', description: 'Spam user account reported', priority: 'medium' },
-    { id: 3, title: 'System Update', description: 'Security patch requires deployment', priority: 'high' },
+    { 
+      id: 1, 
+      title: 'Hotel Verification', 
+      description: 'Oceanview Resort pending approval', 
+      priority: 'high',
+      category: 'verification',
+      dueDate: '2 days'
+    },
+    { 
+      id: 2, 
+      title: 'User Report Investigation', 
+      description: 'Spam user account reported by multiple users', 
+      priority: 'medium',
+      category: 'moderation',
+      dueDate: '5 days'
+    },
+    { 
+      id: 3, 
+      title: 'System Security Update', 
+      description: 'Critical security patch requires deployment', 
+      priority: 'high',
+      category: 'security',
+      dueDate: '1 day'
+    },
+  ];
+
+  const quickStats = [
+    { label: 'Today\'s Bookings', value: '142', trend: '+23%', color: 'blue' },
+    { label: 'Online Hotels', value: '134', trend: '+5%', color: 'green' },
+    { label: 'Pending Reviews', value: '28', trend: '-12%', color: 'yellow' },
+    { label: 'Active Support Tickets', value: '7', trend: '-43%', color: 'purple' },
   ];
 
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        {/* Header */}
-        <div className="md:flex md:items-center md:justify-between">
-          <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-              Admin Dashboard
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Welcome back, {user?.name || 'Administrator'}. Here's your system overview.
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-8 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">
+                  Welcome back, {user?.name || 'Administrator'}
+                </h1>
+                <p className="text-blue-100 text-lg">
+                  {currentTime.toLocaleDateString('vi-VN', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </p>
+                <div className="flex items-center mt-4 space-x-4">
+                  <div className="flex items-center text-blue-100">
+                    <Activity className="h-4 w-4 mr-1" />
+                    <span className="text-sm">System Status: All Good</span>
+                  </div>
+                  <div className="flex items-center text-blue-100">
+                    <Zap className="h-4 w-4 mr-1" />
+                    <span className="text-sm">Performance: Optimal</span>
+                  </div>
+                </div>
+              </div>
+              <div className="hidden md:block">
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4">
+                  <Shield className="h-12 w-12 text-white" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

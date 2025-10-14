@@ -121,7 +121,7 @@ const protect = catchAsync(async (req, res, next) => {
   } catch (error) {
     // Track authentication failure
     await ActivityTracker.trackActivity({
-      activityType: 'auth_failure',
+      activityType: 'failed_login',
       req,
       customData: {
         error: error.message,

@@ -468,7 +468,7 @@ async function trackSecurityEvents(req, res) {
   // Track failed authentication attempts
   if (res.statusCode === 401) {
     await ActivityTracker.trackActivity({
-      activityType: 'auth_failure',
+      activityType: 'failed_login',
       req,
       customData: {
         reason: 'unauthorized',

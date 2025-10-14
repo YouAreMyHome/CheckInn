@@ -6,9 +6,15 @@ const authService = {
       const response = await api.post('/auth/login', credentials);
       
       if (response.data.success) {
-        const { token, refreshToken } = response.data.data;
+        const { token, refreshToken, user } = response.data.data;
         localStorage.setItem('token', token);
         localStorage.setItem('refreshToken', refreshToken);
+        
+        // Store user data if available
+        if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+        
         return response.data;
       } else {
         throw new Error(response.data.message || 'Login failed');
@@ -42,12 +48,14 @@ const authService = {
       
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
       
       return { success: true };
     } catch {
       // Even if logout API fails, clear local storage
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
       return { success: true };
     }
   },
@@ -133,6 +141,29 @@ const authService = {
         throw new Error(error.response.data.message);
       }
       throw new Error('Failed to resend verification');
+    }
+  },
+
+  async validateResetToken(token) {
+    try {
+      const response = await api.get(`/auth/validate-reset-token?token=${token}`);
+      return response.data;
+    } catch (error) {
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error('Invalid or expired token');
+    }
+  },
+
+  getCurrentUser() {
+    try {
+      const userData = localStorage.getItem('user');
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      localStorage.removeItem('user');
+      return null;
     }
   }
 };
