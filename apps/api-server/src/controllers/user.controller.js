@@ -232,6 +232,11 @@ const getRegistrationReport = catchAsync(async (req, res, next) => {
 const verifyUser = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   
+  // Prevent admin from verifying themselves (shouldn't need to)
+  if (id === req.user._id.toString()) {
+    return next(new AppError('Bạn không thể thao tác trên tài khoản của chính mình', 403));
+  }
+  
   res.status(200).json({
     success: true,
     message: 'User verified successfully',
@@ -247,6 +252,11 @@ const verifyUser = catchAsync(async (req, res, next) => {
 const blockUser = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   
+  // Prevent admin from blocking themselves
+  if (id === req.user._id.toString()) {
+    return next(new AppError('Bạn không thể chặn tài khoản của chính mình', 403));
+  }
+  
   res.status(200).json({
     success: true,
     message: 'User blocked successfully',
@@ -261,6 +271,11 @@ const blockUser = catchAsync(async (req, res, next) => {
  */
 const unblockUser = catchAsync(async (req, res, next) => {
   const { id } = req.params;
+  
+  // Prevent admin from unblocking themselves (shouldn't be blocked anyway)
+  if (id === req.user._id.toString()) {
+    return next(new AppError('Bạn không thể thao tác trên tài khoản của chính mình', 403));
+  }
   
   res.status(200).json({
     success: true,

@@ -5,7 +5,8 @@ const UserFormModal = ({
   isOpen, 
   onClose, 
   user = null, 
-  onSave 
+  onSave,
+  isEditingSelf = false
 }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -88,9 +89,13 @@ const UserFormModal = ({
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        role: formData.role,
-        active: formData.status === 'active'
       };
+
+      // Don't include role and status when editing self
+      if (!isEditingSelf) {
+        userData.role = formData.role;
+        userData.active = formData.status === 'active';
+      }
 
       // Add password only for new users
       if (!user && formData.password) {
@@ -226,12 +231,20 @@ const UserFormModal = ({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <Shield className="inline h-4 w-4 mr-1" />
               Role
+              {isEditingSelf && (
+                <span className="ml-2 text-xs text-amber-600 font-normal">
+                  (Cannot change your own role)
+                </span>
+              )}
             </label>
             <select
               name="role"
               value={formData.role}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={isEditingSelf}
+              className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                isEditingSelf ? 'bg-gray-100 cursor-not-allowed' : ''
+              }`}
             >
               <option value="Customer">Customer</option>
               <option value="HotelPartner">Hotel Partner</option>
@@ -243,18 +256,35 @@ const UserFormModal = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Status
+              {isEditingSelf && (
+                <span className="ml-2 text-xs text-amber-600 font-normal">
+                  (Cannot change your own status)
+                </span>
+              )}
             </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={isEditingSelf}
+              className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                isEditingSelf ? 'bg-gray-100 cursor-not-allowed' : ''
+              }`}
             >
               <option value="active">Active</option>
               <option value="suspended">Suspended</option>
               <option value="inactive">Inactive</option>
             </select>
           </div>
+          
+          {/* Self-Edit Warning */}
+          {isEditingSelf && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">
+                ⚠️ <strong>Chỉnh sửa tài khoản của bạn:</strong> Để bảo mật, Role và Status không thể thay đổi.
+              </p>
+            </div>
+          )}
 
           {/* Error Message */}
           {errors.submit && (

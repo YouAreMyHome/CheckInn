@@ -41,13 +41,20 @@ const basicRateLimit = [
  */
 
 // Import additional middleware for authentication
-let authMiddleware, validationMiddleware;
+let authMiddleware, authSimpleMiddleware, validationMiddleware;
 
 try {
   authMiddleware = require('./auth.middleware');
   console.log('✅ Auth middleware loaded');
 } catch (error) {
   console.log('⚠️  Auth middleware not found:', error.message);
+}
+
+try {
+  authSimpleMiddleware = require('./auth.simple.middleware');
+  console.log('✅ Auth simple middleware loaded');
+} catch (error) {
+  console.log('⚠️  Auth simple middleware not found:', error.message);
 }
 
 try {
@@ -67,8 +74,8 @@ module.exports = {
   logging: loggingMiddleware,
   errorHandler: errorController.globalErrorHandler,
   
-  // Authentication middleware
-  auth: authMiddleware || {
+  // Authentication middleware (use simple middleware as default, fallback to full middleware)
+  auth: authSimpleMiddleware || authMiddleware || {
     protect: (req, res, next) => {
       res.status(501).json({ error: 'Auth middleware not available' });
     },

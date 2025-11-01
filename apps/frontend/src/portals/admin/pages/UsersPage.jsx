@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { 
   Users, 
   Search, 
@@ -18,18 +18,31 @@ import {
   Phone,
   MoreVertical,
   Download,
-  Upload
+  Upload,
+  AlertTriangle,
+  Inbox,
+  X
 } from 'lucide-react';
 import UserFormModal from '../components/UserFormModal';
 import userService from '../services/userService';
 import { useNotification } from '../../../shared/components/NotificationProvider';
+import { AuthContext } from '../../../shared/context/AuthContext';
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const notify = useNotification();
+  
+  // Safely get current user from AuthContext
+  const authContext = useContext(AuthContext);
+  const currentUser = authContext?.user || null;
+  const authLoading = authContext?.loading || false;
+  
+  console.log('UsersPage - AuthContext:', { currentUser, authLoading, authContext });
+  
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,6 +55,21 @@ const UsersPage = () => {
 
   const itemsPerPage = 10;
 
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Helper function to check if user is current admin
+  const isCurrentUser = (userId) => {
+    if (!currentUser || !userId) return false;
+    return currentUser._id === userId || currentUser.id === userId;
+  };
+
   // Fetch users from API
   const fetchUsers = useCallback(async () => {
     try {
@@ -51,7 +79,7 @@ const UsersPage = () => {
       const params = {
         page: currentPage,
         limit: itemsPerPage,
-        search: searchTerm,
+        search: debouncedSearchTerm,
         role: filterRole !== 'all' ? filterRole : undefined,
         status: filterStatus !== 'all' ? filterStatus : undefined
       };
@@ -62,7 +90,7 @@ const UsersPage = () => {
         const users = response.data.users || [];
         console.log('👥 Fetched users sample:', users.slice(0, 2)); // Log first 2 users to see structure
         setUsers(users);
-        setTotalUsers(response.data.pagination?.total || 0);
+        setTotalUsers(response.data.pagination?.totalCount || 0);
         setTotalPages(response.data.pagination?.totalPages || 0);
       } else {
         setError(response.message || 'Failed to fetch users');
@@ -73,19 +101,22 @@ const UsersPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchTerm, filterRole, filterStatus]);
+  }, [currentPage, debouncedSearchTerm, filterRole, filterStatus]);
 
   // Fetch users when filters or page changes
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when filters change (not including currentPage in deps to avoid loop)
   useEffect(() => {
-    if (currentPage !== 1) {
-      setCurrentPage(1);
-    }
-  }, [searchTerm, filterRole, filterStatus, currentPage]);
+    setCurrentPage(1);
+  }, [debouncedSearchTerm, filterRole, filterStatus]);
+
+  // Clear search handler
+  const handleClearSearch = () => {
+    setSearchTerm('');
+  };
 
   const handleSelectUser = (userId) => {
     setSelectedUsers(prev => 
@@ -104,13 +135,32 @@ const UsersPage = () => {
   };
 
   const handleEditUser = (user) => {
+    const userId = user._id || user.id;
+    
+    // Allow editing own profile, but show warning about restricted fields
+    if (isCurrentUser(userId)) {
+      notify.info('ℹ️ Bạn đang chỉnh sửa tài khoản của mình. Role và Status không thể thay đổi.');
+    }
+    
     setEditingUser(user);
     setShowEditModal(true);
   };
 
   const handleDeleteUser = async (userId) => {
+    // Check if trying to delete own account
+    if (isCurrentUser(userId)) {
+      notify.error('⛔ Bạn không thể xóa tài khoản của chính mình!');
+      return;
+    }
+
     const user = users.find(u => (u._id || u.id) === userId);
     const userName = user?.name || user?.fullName || 'User';
+    
+    // Additional check for admin users
+    if (user?.role === 'Admin') {
+      notify.warning('⚠️ Không thể xóa tài khoản Admin. Vui lòng liên hệ Super Admin.');
+      return;
+    }
     
     if (confirm(`Bạn có chắc chắn muốn xóa tài khoản của ${userName}?`)) {
       try {
@@ -119,20 +169,36 @@ const UsersPage = () => {
           await fetchUsers(); // Refresh the list
           notify.success(`✅ Đã xóa tài khoản của ${userName}`);
         } else {
-          notify.error('Xóa tài khoản thất bại: ' + response.message);
+          notify.error('❌ ' + (response.message || 'Xóa tài khoản thất bại'));
         }
       } catch (error) {
-        notify.error('Lỗi khi xóa tài khoản: ' + error.message);
+        const errorMessage = error.response?.data?.message || error.message;
+        notify.error('❌ ' + errorMessage);
       }
     }
   };
 
   const handleStatusChange = async (userId, newStatus) => {
+    // Check if trying to change own status
+    if (isCurrentUser(userId)) {
+      notify.error('⛔ Bạn không thể thay đổi trạng thái của chính tài khoản mình!');
+      return;
+    }
+
     try {
       console.log('🔄 Updating user status:', { userId, newStatus });
       
       if (!userId) {
         throw new Error('User ID is undefined or null');
+      }
+
+      const user = users.find(u => (u._id || u.id) === userId);
+      const userName = user?.name || user?.fullName || 'User';
+
+      // Additional check for admin users
+      if (user?.role === 'Admin') {
+        notify.warning('⚠️ Không thể thay đổi trạng thái của tài khoản Admin khác!');
+        return;
       }
       
       const response = await userService.updateUserStatus(userId, newStatus);
@@ -144,9 +210,6 @@ const UsersPage = () => {
         console.log('✅ Users list refreshed');
         
         // Show success notification based on status
-        const user = users.find(u => (u._id || u.id) === userId);
-        const userName = user?.name || user?.fullName || 'User';
-        
         if (newStatus === 'suspended') {
           notify.warning(`🚫 Đã tạm khóa tài khoản của ${userName}`);
         } else if (newStatus === 'active') {
@@ -155,11 +218,12 @@ const UsersPage = () => {
           notify.info(`⚠️ Đã đặt tài khoản của ${userName} thành không hoạt động`);
         }
       } else {
-        notify.error('Cập nhật trạng thái thất bại: ' + response.message);
+        notify.error('❌ ' + (response.message || 'Cập nhật trạng thái thất bại'));
       }
     } catch (error) {
       console.error('❌ Error updating user status:', error);
-      notify.error('Lỗi khi cập nhật trạng thái: ' + error.message);
+      const errorMessage = error.response?.data?.message || error.message;
+      notify.error('❌ ' + errorMessage);
     }
   };
 
@@ -215,7 +279,7 @@ const UsersPage = () => {
     );
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -245,6 +309,22 @@ const UsersPage = () => {
                 <Plus className="h-4 w-4 mr-2" />
                 Add User
               </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Info Banner */}
+        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-2xl p-4">
+          <div className="flex items-start">
+            <AlertTriangle className="h-5 w-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <h4 className="text-sm font-semibold text-blue-900 mb-1">
+                🔒 Bảo vệ tài khoản Admin
+              </h4>
+              <p className="text-sm text-blue-700">
+                Để đảm bảo an toàn, bạn <strong>không thể</strong> thay đổi status, role hoặc xóa tài khoản của chính mình. 
+                Các tài khoản Admin khác cũng được bảo vệ khỏi các thao tác này.
+              </p>
             </div>
           </div>
         </div>
@@ -333,8 +413,22 @@ const UsersPage = () => {
                   placeholder="Search users by name or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {searchTerm && (
+                  <button
+                    onClick={handleClearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    title="Clear search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+                {searchTerm && searchTerm !== debouncedSearchTerm && (
+                  <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -420,8 +514,47 @@ const UsersPage = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user) => (
-                  <tr key={user._id || user.id} className="hover:bg-gray-50">
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="px-6 py-16 text-center">
+                      <div className="flex flex-col items-center justify-center space-y-4">
+                        <div className="p-4 bg-gray-100 rounded-full">
+                          <Inbox className="h-12 w-12 text-gray-400" />
+                        </div>
+                        <div className="space-y-2">
+                          <h3 className="text-lg font-medium text-gray-900">
+                            {searchTerm || filterRole !== 'all' || filterStatus !== 'all' 
+                              ? 'Không tìm thấy người dùng' 
+                              : 'Chưa có người dùng nào'}
+                          </h3>
+                          <p className="text-sm text-gray-500 max-w-md">
+                            {searchTerm || filterRole !== 'all' || filterStatus !== 'all' 
+                              ? 'Không có kết quả nào phù hợp với bộ lọc của bạn. Thử điều chỉnh tiêu chí tìm kiếm.' 
+                              : 'Bắt đầu bằng cách tạo người dùng mới cho hệ thống.'}
+                          </p>
+                        </div>
+                        {!searchTerm && filterRole === 'all' && filterStatus === 'all' && (
+                          <button
+                            onClick={() => setShowCreateModal(true)}
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Tạo người dùng mới
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  users.map((user) => (
+                    <tr 
+                      key={user._id || user.id} 
+                      className={`hover:bg-gray-50 transition-colors ${
+                        isCurrentUser(user._id || user.id) 
+                          ? 'bg-blue-50 border-l-4 border-l-blue-500' 
+                          : ''
+                      }`}
+                    >
                     <td className="px-6 py-4">
                       <input
                         type="checkbox"
@@ -475,31 +608,62 @@ const UsersPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
+                        {isCurrentUser(user._id || user.id) && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2">
+                            <Shield className="h-3 w-3 mr-1" />
+                            You
+                          </span>
+                        )}
                         <button 
                           onClick={() => handleEditUser(user)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-blue-600 hover:text-blue-900 transition-colors"
                           title="Edit"
                         >
                           <Edit3 className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => handleStatusChange(user._id || user.id, user.status === 'active' ? 'suspended' : 'active')}
-                          className={`${user.status === 'active' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
-                          title={user.status === 'active' ? 'Suspend' : 'Activate'}
+                          className={`transition-colors ${
+                            isCurrentUser(user._id || user.id) || user.role === 'Admin'
+                              ? 'text-gray-300 cursor-not-allowed' 
+                              : user.status === 'active' 
+                                ? 'text-red-600 hover:text-red-900' 
+                                : 'text-green-600 hover:text-green-900'
+                          }`}
+                          title={
+                            isCurrentUser(user._id || user.id) 
+                              ? 'Cannot change your own status' 
+                              : user.role === 'Admin'
+                                ? 'Cannot change admin status'
+                                : user.status === 'active' ? 'Suspend' : 'Activate'
+                          }
+                          disabled={isCurrentUser(user._id || user.id) || user.role === 'Admin'}
                         >
                           {user.status === 'active' ? <Ban className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
                         </button>
                         <button 
                           onClick={() => handleDeleteUser(user._id || user.id)}
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete"
+                          className={`transition-colors ${
+                            isCurrentUser(user._id || user.id) || user.role === 'Admin'
+                              ? 'text-gray-300 cursor-not-allowed'
+                              : 'text-red-600 hover:text-red-900'
+                          }`}
+                          title={
+                            isCurrentUser(user._id || user.id)
+                              ? 'Cannot delete your own account'
+                              : user.role === 'Admin'
+                                ? 'Cannot delete admin accounts'
+                                : 'Delete'
+                          }
+                          disabled={isCurrentUser(user._id || user.id) || user.role === 'Admin'}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -579,6 +743,7 @@ const UsersPage = () => {
           onClose={() => setShowEditModal(false)}
           user={editingUser}
           onSave={handleSaveUser}
+          isEditingSelf={editingUser && isCurrentUser(editingUser._id || editingUser.id)}
         />
       </div>
     </div>

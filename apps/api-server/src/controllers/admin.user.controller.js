@@ -237,6 +237,13 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     return next(new AppError('User not found', 404));
   }
 
+  // Prevent admin from updating their own role or status
+  if (user._id.toString() === req.user._id.toString()) {
+    if (updates.role || updates.status) {
+      return next(new AppError('Bạn không thể thay đổi role hoặc status của chính tài khoản mình', 403));
+    }
+  }
+
   // Prevent updating sensitive fields directly
   delete updates.password;
   delete updates.refreshTokens;
@@ -289,9 +296,14 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
     return next(new AppError('User not found', 404));
   }
 
-  // Prevent deleting admin users (safety check)
-  if (user.role === 'Admin' && user._id.toString() !== req.user._id.toString()) {
-    return next(new AppError('Cannot delete other admin users', 403));
+  // Prevent admin from deleting their own account
+  if (user._id.toString() === req.user._id.toString()) {
+    return next(new AppError('Bạn không thể xóa tài khoản của chính mình', 403));
+  }
+
+  // Prevent deleting other admin users (safety check)
+  if (user.role === 'Admin') {
+    return next(new AppError('Không thể xóa tài khoản Admin khác', 403));
   }
 
   // Soft delete - mark as deleted instead of hard delete
@@ -366,9 +378,14 @@ exports.updateUserStatus = catchAsync(async (req, res, next) => {
     return next(new AppError('User not found', 404));
   }
 
-  // Prevent changing admin status
-  if (user.role === 'Admin' && user._id.toString() !== req.user._id.toString()) {
-    return next(new AppError('Cannot change status of other admin users', 403));
+  // Prevent admin from changing their own status
+  if (user._id.toString() === req.user._id.toString()) {
+    return next(new AppError('Bạn không thể thay đổi trạng thái của chính tài khoản mình', 403));
+  }
+
+  // Prevent changing status of other admin users (additional safety)
+  if (user.role === 'Admin') {
+    return next(new AppError('Không thể thay đổi trạng thái của tài khoản Admin khác', 403));
   }
 
   // Update status

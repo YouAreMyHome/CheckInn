@@ -29,7 +29,7 @@ const router = express.Router();
  */
 
 // Apply protected route middleware
-
+router.use(middleware.auth.protect);
 
 /**
  * Current User Operations
