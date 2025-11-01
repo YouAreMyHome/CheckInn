@@ -50,7 +50,7 @@ const protect = catchAsync(async (req, res, next) => {
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
     // 3) Check if user still exists
-    const currentUser = await User.findById(decoded.id).select('+active +loginAttempts +lockUntil');
+    const currentUser = await User.findById(decoded.id).select('+active +status +loginAttempts +lockUntil');
     if (!currentUser) {
       return next(new AppError('The user belonging to this token no longer exists.', 401));
     }
@@ -65,12 +65,21 @@ const protect = catchAsync(async (req, res, next) => {
       return next(new AppError('Your account has been deactivated. Please contact support.', 403));
     }
 
-    // 6) Check if user changed password after token was issued
+    // 6) Check user status
+    if (currentUser.status === 'suspended') {
+      return next(new AppError('Phiên đăng nhập của bạn đã bị tạm dừng do tài khoản bị khóa. Vui lòng liên hệ bộ phận hỗ trợ.', 403));
+    }
+    
+    if (currentUser.status === 'inactive') {
+      return next(new AppError('Phiên đăng nhập của bạn đã bị tạm dừng do tài khoản không hoạt động. Vui lòng liên hệ bộ phận hỗ trợ.', 403));
+    }
+
+    // 7) Check if user changed password after token was issued
     if (currentUser.changedPasswordAfter(decoded.iat)) {
       return next(new AppError('Password recently changed. Please log in again.', 401));
     }
 
-    // 7) Security checks - detect suspicious activity
+    // 8) Security checks - detect suspicious activity
     const deviceInfo = {
       ip: req.ip,
       userAgent: req.get('User-Agent'),

@@ -98,13 +98,22 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 2) Check if user exists && password is correct
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select('+password +status');
 
   if (!user || !(await user.comparePassword(password, user.password))) {
     return next(new AppError('Incorrect email or password.', 401));
   }
 
-  // 3) If everything ok, send token to client
+  // 3) Check if user account is active
+  if (user.status === 'suspended') {
+    return next(new AppError('Tài khoản của bạn đã bị tạm khóa. Vui lòng liên hệ bộ phận hỗ trợ để biết thêm chi tiết.', 403));
+  }
+  
+  if (user.status === 'inactive') {
+    return next(new AppError('Tài khoản của bạn đang không hoạt động. Vui lòng liên hệ bộ phận hỗ trợ để kích hoạt lại.', 403));
+  }
+
+  // 4) If everything ok, send token to client
   createSendToken(user, 200, res);
 });
 

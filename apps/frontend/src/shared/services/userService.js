@@ -118,6 +118,19 @@ const userService = {
       }
       throw new Error('Failed to update profile');
     }
+  },
+
+  // Admin: Update user status
+  async updateUserStatus(userId, status) {
+    try {
+      const response = await api.patch(`/admin/users/${userId}/status`, { status });
+      return response.data;
+    } catch (error) {
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error('Failed to update user status');
+    }
   }
 };
 

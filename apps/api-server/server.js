@@ -16,6 +16,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 
 // Import database functions
@@ -79,6 +80,9 @@ app.use(compression());
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Cookie parsing
+app.use(cookieParser());
 
 // Basic request logging
 app.use((req, res, next) => {
@@ -219,6 +223,15 @@ try {
   console.log('⚠️  Review routes not found:', error.message);
 }
 
+// Admin routes
+let adminUserRoutes;
+try {
+  adminUserRoutes = require('./src/routes/admin.user.routes');
+  console.log('✅ Admin user routes loaded successfully');
+} catch (error) {
+  console.log('⚠️  Admin user routes not found:', error.message);
+}
+
 // Basic API endpoints
 app.get('/api', (req, res) => {
   res.json({
@@ -267,6 +280,11 @@ if (bookingRoutes) {
 if (reviewRoutes) {
   app.use('/api/reviews', reviewRoutes);
   console.log('✅ Review routes mounted at /api/reviews');
+}
+
+if (adminUserRoutes) {
+  app.use('/api/admin/users', adminUserRoutes);
+  console.log('✅ Admin user routes mounted at /api/admin/users');
 }
 
 // Connect to MongoDB when server starts

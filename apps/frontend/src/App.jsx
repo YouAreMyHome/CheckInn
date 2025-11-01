@@ -21,11 +21,14 @@ import ForgotPasswordPage from './portals/customer/pages/ForgotPasswordPage';
 // Auth Components
 import { AuthProvider } from './shared/context/AuthContext.jsx';
 import ProtectedRoute from './shared/components/ProtectedRoute';
+import { NotificationProvider } from './shared/components/NotificationProvider';
 
 // Shared Components
 import ErrorBoundary from './shared/components/ErrorBoundarySimple';
 import TestPage from './TestPage';
+import TestNotifications from './TestNotifications';
 import AdminAuthDemo from './portals/admin/components/AdminAuthDemo';
+import NotificationTest from './components/NotificationTest';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -43,10 +46,13 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Router>
           <AuthProvider>
-            <div className="min-h-screen bg-gray-50">
-              <Routes>
+            <NotificationProvider>
+              <div className="min-h-screen bg-gray-50">
+                <Routes>
                 {/* Test Routes */}
                 <Route path="/test" element={<TestPage />} />
+                <Route path="/test-notifications" element={<TestNotifications />} />
+                <Route path="/test-notifications-old" element={<NotificationTest />} />
                 <Route path="/admin-auth-demo" element={<AdminAuthDemo />} />
                 
                 {/* Customer Portal Routes */}
@@ -90,6 +96,7 @@ function App() {
                 </div>} />
               </Routes>
             </div>
+            </NotificationProvider>
           </AuthProvider>
         </Router>
       </QueryClientProvider>

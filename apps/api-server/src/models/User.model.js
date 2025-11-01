@@ -74,6 +74,12 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false // Don't include in queries by default
   },
+  status: {
+    type: String,
+    enum: ['active', 'suspended', 'inactive'],
+    default: 'active'
+  },
+  statusUpdatedAt: Date,
   loginAttempts: {
     type: Number,
     default: 0

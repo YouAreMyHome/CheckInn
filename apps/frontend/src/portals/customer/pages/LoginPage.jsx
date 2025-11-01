@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../shared/hooks/useAuth';
-import { Eye, EyeOff, AlertCircle, Loader2, Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, Loader2, Mail, Lock, ArrowRight, CheckCircle, Wifi, WifiOff } from 'lucide-react';
+import { useNotification } from '../../../shared/components/NotificationProvider';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -12,25 +13,89 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const notify = useNotification();
 
   // Get redirect path from location state
   const redirectPath = location.state?.from?.pathname || '/';
 
+  // Monitor network status
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      notify.success('🌐 Kết nối internet đã được khôi phục!', 3000);
+    };
+    
+    const handleOffline = () => {
+      setIsOnline(false);
+      notify.warning('📡 Mất kết nối internet. Một số tính năng có thể không hoạt động.');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [notify]);
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+    
     // Clear error when user starts typing
     if (error) setError('');
+    
+    // Real-time validation feedback
+    if (name === 'email' && value && !value.includes('@')) {
+      // Show subtle validation hint but don't block submission
+    } else if (name === 'password' && value && value.length < 8) {
+      // Show password strength hint
+    }
+  };
+
+  const validateForm = () => {
+    // Email validation
+    if (!formData.email.trim()) {
+      notify.validation('📧 Vui lòng nhập địa chỉ email.');
+      return false;
+    }
+    
+    if (!formData.email.includes('@') || !formData.email.includes('.')) {
+      notify.validation('📧 Địa chỉ email không hợp lệ. Vui lòng kiểm tra lại.');
+      return false;
+    }
+    
+    // Password validation
+    if (!formData.password.trim()) {
+      notify.validation('🔒 Vui lòng nhập mật khẩu.');
+      return false;
+    }
+    
+    if (formData.password.length < 6) {
+      notify.validation('🔒 Mật khẩu phải có ít nhất 6 ký tự.');
+      return false;
+    }
+    
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Client-side validation
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
     setError('');
 
@@ -40,6 +105,10 @@ const LoginPage = () => {
       const response = await login(formData);
       
       if (response.success) {
+        // Show success notification with user name
+        const userName = response.data.user.name || response.data.user.fullName || 'User';
+        notify.loginSuccess(userName);
+        
         // Redirect based on user role
         const userRole = response.data.user.role;
         if (userRole === 'Admin') {
@@ -51,7 +120,38 @@ const LoginPage = () => {
         }
       }
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      console.log('Login error details:', err);
+      
+      // Determine error type and show appropriate notification
+      let errorMessage = 'Đăng nhập thất bại';
+      
+      if (!navigator.onLine) {
+        errorMessage = 'Không có kết nối mạng';
+        notify.networkError('📡 Mất kết nối internet. Vui lòng kiểm tra mạng và thử lại.');
+      } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        errorMessage = 'Kết nối quá chậm';
+        notify.loginFailed('timeout');
+      } else if (err.response?.status === 500 || err.message?.includes('server')) {
+        errorMessage = 'Lỗi hệ thống';
+        notify.loginFailed('server');
+      } else if (err.message?.includes('tài khoản của bạn đã bị tạm khóa') || err.message?.includes('suspended')) {
+        errorMessage = 'Tài khoản đã bị tạm khóa';
+        notify.suspended('🚫 Tài khoản của bạn đã bị tạm dừng do vi phạm chính sách sử dụng. Chúng tôi sẽ hỗ trợ bạn giải quyết vấn đề này.');
+      } else if (err.message?.includes('inactive') || err.message?.includes('không hoạt động')) {
+        errorMessage = 'Tài khoản không hoạt động';
+        notify.inactive('⚠️ Tài khoản của bạn hiện chưa được kích hoạt. Vui lòng kiểm tra email hoặc liên hệ hỗ trợ.');
+      } else if (err.response?.status === 403 || err.message?.includes('Incorrect email or password') || err.message?.includes('không chính xác')) {
+        errorMessage = 'Sai thông tin đăng nhập';
+        notify.invalidCredentials('🔑 Thông tin đăng nhập không chính xác. Vui lòng kiểm tra lại email và mật khẩu.');
+      } else if (err.response?.status === 429) {
+        errorMessage = 'Đăng nhập quá nhiều lần';
+        notify.warning('⏰ Bạn đã thử đăng nhập quá nhiều lần. Vui lòng đợi 5 phút và thử lại.');
+      } else {
+        errorMessage = 'Lỗi không xác định';
+        notify.loginFailed('unknown');
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -179,9 +279,29 @@ const LoginPage = () => {
           </div>
 
           <div className="text-center lg:text-left mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Sign in to your account
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-3xl font-bold text-gray-900">
+                Sign in to your account
+              </h2>
+              {/* Network Status Indicator */}
+              <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs ${
+                isOnline 
+                  ? 'bg-green-100 text-green-700' 
+                  : 'bg-red-100 text-red-700 animate-pulse'
+              }`}>
+                {isOnline ? (
+                  <>
+                    <Wifi className="h-3 w-3" />
+                    <span>Online</span>
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="h-3 w-3" />
+                    <span>Offline</span>
+                  </>
+                )}
+              </div>
+            </div>
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
               <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
@@ -192,11 +312,31 @@ const LoginPage = () => {
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className={`mb-6 rounded-lg p-4 border ${
+              error.includes('🚫') || error.includes('suspended') || error.includes('tạm khóa')
+                ? 'bg-orange-50 border-orange-200 animate-pulse'
+                : 'bg-red-50 border-red-200'
+            }`}>
               <div className="flex">
-                <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
+                <AlertCircle className={`h-5 w-5 flex-shrink-0 ${
+                  error.includes('🚫') || error.includes('suspended') || error.includes('tạm khóa')
+                    ? 'text-orange-400'
+                    : 'text-red-400'
+                }`} />
                 <div className="ml-3">
-                  <p className="text-sm text-red-800">{error}</p>
+                  <p className={`text-sm font-medium ${
+                    error.includes('🚫') || error.includes('suspended') || error.includes('tạm khóa')
+                      ? 'text-orange-800'
+                      : 'text-red-800'
+                  }`}>{error}</p>
+                  {(error.includes('🚫') || error.includes('suspended') || error.includes('tạm khóa')) && (
+                    <div className="mt-2 text-xs text-orange-700 bg-orange-100 p-2 rounded border-l-4 border-orange-400">
+                      <p className="font-semibold">📞 Liên hệ hỗ trợ:</p>
+                      <p>• Email: support@checkinn.com</p>
+                      <p>• Hotline: 1900-1234 (8:00 - 22:00)</p>
+                      <p>• Live Chat: checkinn.com/support</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -282,18 +422,29 @@ const LoginPage = () => {
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              disabled={loading || !formData.email.trim() || !formData.password.trim()}
+              className={`
+                w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white 
+                transition-all duration-200 ease-in-out
+                ${loading 
+                  ? 'bg-blue-400 cursor-not-allowed' 
+                  : !formData.email.trim() || !formData.password.trim()
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700 hover:shadow-md transform hover:scale-105'
+                }
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                disabled:opacity-50 disabled:transform-none
+              `}
             >
               {loading ? (
                 <>
                   <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
-                  Signing in...
+                  <span className="animate-pulse">Đang đăng nhập...</span>
                 </>
               ) : (
                 <>
-                  Sign in
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <span>Đăng nhập</span>
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </>
               )}
             </button>

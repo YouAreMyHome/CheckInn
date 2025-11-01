@@ -3,11 +3,13 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Shield, AlertCircle, CheckCircle } from 'lucide-react';
 import { adminAuthService } from '../services/adminAuthService';
 import { useAuth } from '../../../shared/hooks/useAuth';
+import { useNotification } from '../../../shared/components/NotificationProvider';
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { refreshAuthState } = useAuth();
+  const notify = useNotification();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -86,8 +88,12 @@ const AdminLoginPage = () => {
         localStorage.removeItem('adminRememberMe');
       }
       
+      // Show success notification with admin name
+      const adminName = result.data?.user?.name || result.data?.user?.fullName || 'Admin';
+      notify.loginSuccess(adminName);
+      
       // Debug logging
-      console.log('Login successful, user data:', result.data?.user);
+      console.log('Admin login successful, user data:', result.data?.user);
       console.log('Token stored:', localStorage.getItem('token'));
       console.log('User stored:', localStorage.getItem('user'));
       
@@ -102,7 +108,41 @@ const AdminLoginPage = () => {
       
     } catch (err) {
       setLoading(false);
-      setError(err.message || 'Login failed. Please check your credentials.');
+      console.log('Admin login error details:', err);
+      
+      // Determine error type and show appropriate notification for admin
+      let errorMessage = 'Đăng nhập thất bại';
+      
+      if (!navigator.onLine) {
+        errorMessage = 'Không có kết nối mạng';
+        notify.networkError('📡 Mất kết nối internet. Admin Portal cần kết nối ổn định để bảo mật.');
+      } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        errorMessage = 'Kết nối quá chậm';
+        notify.loginFailed('timeout');
+      } else if (err.response?.status === 500 || err.message?.includes('server')) {
+        errorMessage = 'Lỗi hệ thống';
+        notify.loginFailed('server');
+      } else if (err.message?.includes('tài khoản của bạn đã bị tạm khóa') || err.message?.includes('suspended')) {
+        errorMessage = 'Tài khoản Admin đã bị tạm khóa';
+        notify.suspended('🚫 Tài khoản Admin của bạn đã bị tạm dừng. Đây là vấn đề bảo mật nghiêm trọng - vui lòng liên hệ quản trị viên cấp cao ngay lập tức.');
+      } else if (err.message?.includes('inactive') || err.message?.includes('không hoạt động')) {
+        errorMessage = 'Tài khoản Admin không hoạt động';
+        notify.inactive('⚠️ Tài khoản Admin chưa được kích hoạt hoặc đã bị vô hiệu hóa. Vui lòng liên hệ IT để được hỗ trợ.');
+      } else if (err.response?.status === 403 || err.message?.includes('Incorrect email or password') || err.message?.includes('không chính xác')) {
+        errorMessage = 'Thông tin đăng nhập Admin không đúng';
+        notify.invalidCredentials('🔑 Thông tin đăng nhập Admin không chính xác. Lưu ý: Admin Portal yêu cầu bảo mật cao.');
+      } else if (err.message?.includes('role') || err.message?.includes('quyền')) {
+        errorMessage = 'Không có quyền truy cập Admin';
+        notify.warning('🔒 Tài khoản này không có quyền truy cập Admin Portal. Chỉ Admin được phép truy cập.');
+      } else if (err.response?.status === 429) {
+        errorMessage = 'Quá nhiều lần thử đăng nhập';
+        notify.warning('⏰ Quá nhiều lần thử đăng nhập. Admin Portal bị khóa tạm thời 10 phút để bảo mật.');
+      } else {
+        errorMessage = 'Lỗi đăng nhập Admin';
+        notify.loginFailed('unknown');
+      }
+      
+      setError(errorMessage);
     }
   };
 
@@ -120,6 +160,15 @@ const AdminLoginPage = () => {
           <p className="text-blue-200">
             Sign in to access the administration panel
           </p>
+          
+          {/* Debug - Test Notification Button */}
+          <button
+            type="button"
+            onClick={() => notify.success('🧪 Test notification hoạt động!')}
+            className="mt-2 text-xs text-blue-300 hover:text-white underline"
+          >
+            Test Notification
+          </button>
         </div>
 
         {/* Login Form */}
@@ -202,9 +251,28 @@ const AdminLoginPage = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="flex items-center space-x-2 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
-                <p className="text-red-200 text-sm">{error}</p>
+              <div className={`flex items-center space-x-2 p-4 rounded-lg border ${
+                error.includes('🚫') || error.includes('suspended') || error.includes('tạm khóa')
+                  ? 'bg-orange-500/20 border-orange-500/40 animate-pulse'
+                  : 'bg-red-500/20 border-red-500/30'
+              }`}>
+                <AlertCircle className={`h-5 w-5 flex-shrink-0 ${
+                  error.includes('🚫') || error.includes('suspended') || error.includes('tạm khóa')
+                    ? 'text-orange-400'
+                    : 'text-red-400'
+                }`} />
+                <div>
+                  <p className={`text-sm font-medium ${
+                    error.includes('🚫') || error.includes('suspended') || error.includes('tạm khóa')
+                      ? 'text-orange-200'
+                      : 'text-red-200'
+                  }`}>{error}</p>
+                  {(error.includes('🚫') || error.includes('suspended') || error.includes('tạm khóa')) && (
+                    <p className="text-orange-300 text-xs mt-1">
+                      📞 Liên hệ: support@checkinn.com hoặc hotline: 1900-1234
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
