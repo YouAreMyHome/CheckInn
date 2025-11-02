@@ -12,7 +12,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { useAuth } from '../../../shared/hooks/useAuth';
+import { useAuth } from '@hooks/useAuth';
 
 const HotelManagerLayout = () => {
   const { user, logout } = useAuth();

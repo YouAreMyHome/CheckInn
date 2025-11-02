@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, AlertCircle, CheckCircle, Loader2, Mail, Lock, User, Phone, ArrowRight } from 'lucide-react';
-import { authService } from '../../../shared/services';
+import { authService } from '@services';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({

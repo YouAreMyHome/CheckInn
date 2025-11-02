@@ -13,7 +13,7 @@ import {
   X,
   CheckCircle
 } from 'lucide-react';
-import { useAuth } from '../../../shared/hooks/useAuth';
+import { useAuth } from '@hooks/useAuth';
 
 const AdminLayout = () => {
   const { user, logout } = useAuth();

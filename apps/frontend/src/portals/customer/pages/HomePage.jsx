@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, MapPin, Calendar, Users, Star, Wifi, Car, Coffee, Waves, TrendingUp, Award, Clock, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { hotelService } from '../../../shared/services';
-import LoadingSpinner from '../../../shared/components/LoadingSpinner';
-import ErrorMessage from '../../../shared/components/ErrorMessage';
+import { hotelService } from '@services';
+import LoadingSpinner from '@components/LoadingSpinner';
+import ErrorMessage from '@components/ErrorMessage';
 
 const HomePage = () => {
   const [searchData, setSearchData] = useState({

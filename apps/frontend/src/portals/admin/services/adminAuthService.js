@@ -1,5 +1,5 @@
 // Admin Authentication Service
-import { authService as baseAuthService } from '../../../shared/services/authService';
+import { authService as baseAuthService } from '@services/authService';
 
 class AdminAuthService {
   // Admin login với validation role

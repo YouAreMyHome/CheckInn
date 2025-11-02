@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Search, MapPin, Calendar, Users, Star, Filter, Grid, List } from 'lucide-react';
-import { hotelService } from '../../../shared/services';
+import { hotelService } from '@services';
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();

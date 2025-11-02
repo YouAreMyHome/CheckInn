@@ -12,8 +12,8 @@ import {
   AlertCircle,
   CheckCircle
 } from 'lucide-react';
-import { userService } from '../../../shared/services';
-import { useAuth } from '../../../shared/hooks/useAuth';
+import { userService } from '@services';
+import { useAuth } from '@hooks/useAuth';
 
 const ProfilePage = () => {
   const navigate = useNavigate();

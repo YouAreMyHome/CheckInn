@@ -12,8 +12,8 @@ import {
   Info,
   Clock
 } from 'lucide-react';
-import { bookingService } from '../../../shared/services';
-import { useAuth } from '../../../shared/hooks/useAuth';
+import { bookingService } from '@services';
+import { useAuth } from '@hooks/useAuth';
 
 const BookingPage = () => {
   const location = useLocation();

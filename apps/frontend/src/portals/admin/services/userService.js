@@ -1,4 +1,4 @@
-import api from '../../../shared/services/api';
+import api from '@services/api';
 
 const userService = {
   // Get all users with filters and pagination

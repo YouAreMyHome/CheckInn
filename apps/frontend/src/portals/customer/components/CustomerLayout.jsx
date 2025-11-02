@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../../../shared/hooks/useAuth';
+import { useAuth } from '@hooks/useAuth';
 import { Search, Menu, X, User, LogOut, Settings, Calendar } from 'lucide-react';
 
 const CustomerLayout = () => {

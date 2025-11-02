@@ -23,10 +23,10 @@ import {
   Inbox,
   X
 } from 'lucide-react';
-import UserFormModal from '../components/UserFormModal';
-import userService from '../services/userService';
-import { useNotification } from '../../../shared/components/NotificationProvider';
-import { AuthContext } from '../../../shared/context/AuthContext';
+import UserFormModal from '@admin/components/UserFormModal';
+import userService from '@admin/services/userService';
+import { useNotification } from '@components/NotificationProvider';
+import { AuthContext } from '@context/AuthContext';
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);

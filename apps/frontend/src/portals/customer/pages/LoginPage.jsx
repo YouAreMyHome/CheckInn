@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../../shared/hooks/useAuth';
+import { useAuth } from '@hooks/useAuth';
 import { Eye, EyeOff, AlertCircle, Loader2, Mail, Lock, ArrowRight, CheckCircle, Wifi, WifiOff } from 'lucide-react';
-import { useNotification } from '../../../shared/components/NotificationProvider';
+import { useNotification } from '@components/NotificationProvider';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({

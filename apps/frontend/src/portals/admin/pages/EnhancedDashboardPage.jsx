@@ -1,4 +1,4 @@
-import { useAuth } from '../../../shared/hooks/useAuth';
+import { useAuth } from '@hooks/useAuth';
 import { 
   Users, 
   Building2, 
@@ -250,7 +250,7 @@ const EnhancedDashboardPage = () => {
             Real-time Metrics
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {quickStats.map((stat, index) => (
+            {quickStats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className={`text-2xl font-bold ${
                   stat.color === 'blue' ? 'text-blue-600' :

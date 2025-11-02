@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Shield, AlertCircle, CheckCircle } from 'lucide-react';
 import { adminAuthService } from '../services/adminAuthService';
-import { useAuth } from '../../../shared/hooks/useAuth';
-import { useNotification } from '../../../shared/components/NotificationProvider';
+import { useAuth } from '@hooks/useAuth';
+import { useNotification } from '@components/NotificationProvider';
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();

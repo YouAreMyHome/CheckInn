@@ -38,7 +38,10 @@
     "docs": "echo 'CheckInn Documentation:' && echo '- Progress: docs/PROGRESS_REPORT.md' && echo '- Summary: STATUS_SUMMARY.md' && echo '- README: README.md'",
     "status": "npm run docs",
     "test:health": "powershell -Command \"Write-Host 'Testing server health...' && try { $response = Invoke-WebRequest -Uri 'http://localhost:5000/health' -Method GET; Write-Host 'Server Status: OK'; $response.Content } catch { Write-Host 'Server Status: Not Running' }\"",
-    "info": "echo 'CheckInn - Website Đặt Phòng Khách Sạn' && echo 'Repository: https://github.com/YouAreMyHome/CheckInn.git' && echo 'Version: 2.0.0' && echo 'Status: Full Stack Application Ready' && echo 'API Server: http://localhost:5000' && echo 'Frontend: http://localhost:5173' && echo 'Use: npm run dev (to run both servers)'"
+    "info": "echo 'CheckInn - Website Đặt Phòng Khách Sạn' && echo 'Repository: https://github.com/YouAreMyHome/CheckInn.git' && echo 'Version: 2.0.0' && echo 'Status: Full Stack Application Ready' && echo 'API Server: http://localhost:5000' && echo 'Frontend: http://localhost:5173' && echo 'Use: npm run dev (to run both servers)'",
+    "check:imports": "node scripts/check-relative-imports.js",
+    "migrate:imports": "node scripts/migrate-to-alias.js",
+    "migrate:imports:dry": "node scripts/migrate-to-alias.js --dry-run"
   },
   "keywords": [
     "hotel",

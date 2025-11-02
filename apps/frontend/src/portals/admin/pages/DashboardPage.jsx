@@ -1,4 +1,4 @@
-import { useAuth } from '../../../shared/hooks/useAuth';
+import { useAuth } from '@hooks/useAuth';
 import { 
   Users, 
   Building2, 
@@ -137,13 +137,6 @@ const DashboardPage = () => {
       category: 'security',
       dueDate: '1 day'
     },
-  ];
-
-  const quickStats = [
-    { label: 'Today\'s Bookings', value: '142', trend: '+23%', color: 'blue' },
-    { label: 'Online Hotels', value: '134', trend: '+5%', color: 'green' },
-    { label: 'Pending Reviews', value: '28', trend: '-12%', color: 'yellow' },
-    { label: 'Active Support Tickets', value: '7', trend: '-43%', color: 'purple' },
   ];
 
   return (

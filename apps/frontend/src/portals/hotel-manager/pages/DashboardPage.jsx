@@ -1,4 +1,4 @@
-import { useAuth } from '../../../shared/hooks/useAuth';
+import { useAuth } from '@hooks/useAuth';
 import { Building2, BedDouble, Calendar, TrendingUp, Users, DollarSign } from 'lucide-react';
 
 const DashboardPage = () => {

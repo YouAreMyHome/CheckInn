@@ -17,7 +17,7 @@ import {
   Mail,
   Globe
 } from 'lucide-react';
-import { hotelService, roomService } from '../../../shared/services';
+import { hotelService, roomService } from '@services';
 
 const HotelDetailPage = () => {
   const { hotelId } = useParams();

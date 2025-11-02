@@ -268,6 +268,8 @@ npm run clean          # Clean all builds
 - **🏗️ [Architecture](./docs/architecture/)** - System design
 - **🔌 [API Docs](./docs/api/)** - API reference
 - **🚀 [Deployment](./docs/deployment/)** - Production deployment
+- **🎯 [Import Alias System](./docs/IMPORT_ALIAS_SYSTEM.md)** - Import paths guide
+- **📋 [Import Alias Quick Ref](./docs/IMPORT_ALIAS_QUICK_REF.md)** - Quick reference
 
 ## 🤝 Contributing
 
