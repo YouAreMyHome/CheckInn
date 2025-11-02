@@ -45,14 +45,14 @@ let authMiddleware, authSimpleMiddleware, validationMiddleware;
 
 try {
   authMiddleware = require('./auth.middleware');
-  console.log('✅ Auth middleware loaded');
+  console.log('✅ Auth middleware (optimized) loaded');
 } catch (error) {
   console.log('⚠️  Auth middleware not found:', error.message);
 }
 
 try {
   authSimpleMiddleware = require('./auth.simple.middleware');
-  console.log('✅ Auth simple middleware loaded');
+  console.log('✅ Auth simple middleware (fallback) loaded');
 } catch (error) {
   console.log('⚠️  Auth simple middleware not found:', error.message);
 }
@@ -74,8 +74,8 @@ module.exports = {
   logging: loggingMiddleware,
   errorHandler: errorController.globalErrorHandler,
   
-  // Authentication middleware (use simple middleware as default, fallback to full middleware)
-  auth: authSimpleMiddleware || authMiddleware || {
+  // Authentication middleware (use optimized middleware as default, fallback to simple)
+  auth: authMiddleware || authSimpleMiddleware || {
     protect: (req, res, next) => {
       res.status(501).json({ error: 'Auth middleware not available' });
     },

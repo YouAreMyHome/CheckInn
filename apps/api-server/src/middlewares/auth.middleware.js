@@ -1,11 +1,11 @@
 /**
- * Enhanced Authentication Middleware for CheckInn Hotel Booking Platform
+ * Optimized Authentication Middleware for CheckInn Hotel Booking Platform
  * 
- * Comprehensive authentication và authorization với security features,
- * session management, và activity tracking
+ * Balance giữa security features và performance
+ * Optional tracking để tránh errors khi utils chưa ready
  * 
  * @author CheckInn Team
- * @version 2.0.0
+ * @version 2.0.0 - Optimized
  */
 
 const jwt = require('jsonwebtoken');
@@ -14,9 +14,16 @@ const { promisify } = require('util');
 const User = require('../models/User.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const APIResponse = require('../utils/apiResponse');
-const ActivityTracker = require('../utils/activityTracker');
-const FraudDetection = require('../utils/fraudDetection');
+
+// Optional dependencies - không crash nếu không tồn tại
+let ActivityTracker = null;
+let FraudDetection = null;
+try {
+  ActivityTracker = require('../utils/activityTracker');
+  FraudDetection = require('../utils/fraudDetection');
+} catch (error) {
+  console.warn('⚠️ ActivityTracker/FraudDetection not available. Running in basic mode.');
+}
 
 /**
  * ============================================================================
@@ -25,19 +32,17 @@ const FraudDetection = require('../utils/fraudDetection');
  */
 
 /**
- * Protect routes - verify JWT token với enhanced security
+ * Protect routes - Optimized JWT verification với optional tracking
  */
 const protect = catchAsync(async (req, res, next) => {
-  const startTime = Date.now();
-  
-  // 1) Extract token từ multiple sources
+  // 1) Extract token từ multiple sources (Bearer, cookies, query)
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies.jwt) {
+  } else if (req.cookies?.jwt) {
     token = req.cookies.jwt;
-  } else if (req.query.token) {
-    // Allow token in query for special cases (like email verification links)
+  } else if (req.query?.token) {
+    // Allow token in query for special cases (email verification)
     token = req.query.token;
   }
 
@@ -46,26 +51,22 @@ const protect = catchAsync(async (req, res, next) => {
   }
 
   try {
-    // 2) Verify token và decode payload
+    // 2) Verify token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-    // 3) Check if user still exists
-    const currentUser = await User.findById(decoded.id).select('+active +status +loginAttempts +lockUntil');
+    // 3) Check if user exists - single optimized query
+    const currentUser = await User.findById(decoded.id)
+      .select('+active +status +loginAttempts +lockUntil +passwordChangedAt');
+    
     if (!currentUser) {
       return next(new AppError('The user belonging to this token no longer exists.', 401));
     }
 
-    // 4) Check if account is locked
-    if (currentUser.isLocked) {
-      return next(new AppError('Account temporarily locked due to too many failed login attempts. Try again later.', 423));
-    }
-
-    // 5) Check if user is active
+    // 4) Security checks - order by likelihood để fail fast
     if (!currentUser.active) {
       return next(new AppError('Your account has been deactivated. Please contact support.', 403));
     }
 
-    // 6) Check user status
     if (currentUser.status === 'suspended') {
       return next(new AppError('Phiên đăng nhập của bạn đã bị tạm dừng do tài khoản bị khóa. Vui lòng liên hệ bộ phận hỗ trợ.', 403));
     }
@@ -74,69 +75,79 @@ const protect = catchAsync(async (req, res, next) => {
       return next(new AppError('Phiên đăng nhập của bạn đã bị tạm dừng do tài khoản không hoạt động. Vui lòng liên hệ bộ phận hỗ trợ.', 403));
     }
 
-    // 7) Check if user changed password after token was issued
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
+    if (currentUser.isLocked) {
+      return next(new AppError('Account temporarily locked due to too many failed login attempts. Try again later.', 423));
+    }
+
+    // 5) Check if password changed after token issued
+    if (currentUser.changedPasswordAfter && currentUser.changedPasswordAfter(decoded.iat)) {
       return next(new AppError('Password recently changed. Please log in again.', 401));
     }
 
-    // 8) Security checks - detect suspicious activity
-    const deviceInfo = {
-      ip: req.ip,
-      userAgent: req.get('User-Agent'),
-      timestamp: new Date()
-    };
+    // 6) Optional: Fraud detection (chỉ chạy nếu có FraudDetection)
+    if (FraudDetection) {
+      const deviceInfo = {
+        ip: req.ip,
+        userAgent: req.get('User-Agent'),
+        timestamp: new Date()
+      };
 
-    const suspiciousActivity = await FraudDetection.checkSuspiciousLogin(currentUser._id, deviceInfo);
-    if (suspiciousActivity.isSuspicious && suspiciousActivity.riskLevel > 80) {
-      // Log suspicious activity
-      await ActivityTracker.trackActivity({
-        activityType: 'suspicious_login_blocked',
-        req,
-        userId: currentUser._id,
-        customData: {
-          riskLevel: suspiciousActivity.riskLevel,
-          reasons: suspiciousActivity.reasons
+      try {
+        const suspiciousActivity = await FraudDetection.checkSuspiciousLogin(currentUser._id, deviceInfo);
+        if (suspiciousActivity.isSuspicious && suspiciousActivity.riskLevel > 80) {
+          // Optional: Log suspicious activity
+          if (ActivityTracker) {
+            ActivityTracker.trackActivity({
+              activityType: 'suspicious_login_blocked',
+              req,
+              userId: currentUser._id,
+              customData: {
+                riskLevel: suspiciousActivity.riskLevel,
+                reasons: suspiciousActivity.reasons
+              }
+            }).catch(err => console.error('ActivityTracker error:', err));
+          }
+
+          return next(new AppError('Suspicious activity detected. Please verify your identity.', 403));
         }
-      });
-
-      return next(new AppError('Suspicious activity detected. Please verify your identity.', 403));
+      } catch (fraudError) {
+        // Don't block user nếu fraud detection fails
+        console.error('FraudDetection error:', fraudError.message);
+      }
     }
 
-    // 8) Update last activity
-    await User.findByIdAndUpdate(decoded.id, {
+    // 7) Update last activity - non-blocking fire-and-forget
+    User.findByIdAndUpdate(decoded.id, {
       lastActive: new Date(),
-      lastIP: req.ip,
-      'deviceInfo.lastSeen': new Date()
-    });
+      lastIP: req.ip
+    }).exec().catch(err => console.error('Update lastActive error:', err));
 
-    // 9) Track authentication success
-    const authTime = Date.now() - startTime;
-    await ActivityTracker.trackActivity({
-      activityType: 'auth_success',
-      req,
-      userId: currentUser._id,
-      customData: {
-        authMethod: 'jwt',
-        authTime,
-        deviceInfo
-      }
-    });
+    // 8) Optional: Track auth success (non-blocking)
+    if (ActivityTracker) {
+      ActivityTracker.trackActivity({
+        activityType: 'auth_success',
+        req,
+        userId: currentUser._id,
+        customData: { authMethod: 'jwt' }
+      }).catch(err => console.error('ActivityTracker error:', err));
+    }
 
     // Grant access
     req.user = currentUser;
-    req.authTime = authTime;
     next();
 
   } catch (error) {
-    // Track authentication failure
-    await ActivityTracker.trackActivity({
-      activityType: 'failed_login',
-      req,
-      customData: {
-        error: error.message,
-        tokenProvided: !!token
-      }
-    });
+    // Optional: Track failure (non-blocking)
+    if (ActivityTracker) {
+      ActivityTracker.trackActivity({
+        activityType: 'auth_failed',
+        req,
+        customData: {
+          error: error.message,
+          errorType: error.name
+        }
+      }).catch(err => console.error('ActivityTracker error:', err));
+    }
 
     if (error.name === 'JsonWebTokenError') {
       return next(new AppError('Invalid token. Please log in again.', 401));
@@ -154,75 +165,83 @@ const protect = catchAsync(async (req, res, next) => {
  */
 
 /**
- * Role-based authorization với enhanced permissions
+ * Role-based authorization - Optimized with optional tracking
  */
 const restrictTo = (...roles) => {
-  return catchAsync(async (req, res, next) => {
+  return (req, res, next) => {
+    // Fast sync check
     if (!req.user) {
       return next(new AppError('Authentication required before authorization.', 401));
     }
 
-    // Check if user has required role
     if (!roles.includes(req.user.role)) {
-      // Track unauthorized access attempt
-      await ActivityTracker.trackActivity({
-        activityType: 'unauthorized_access_attempt',
-        req,
-        userId: req.user._id,
-        customData: {
-          requiredRoles: roles,
-          userRole: req.user.role,
-          resource: req.route?.path
-        }
-      });
+      // Optional: Track unauthorized attempt (non-blocking)
+      if (ActivityTracker) {
+        ActivityTracker.trackActivity({
+          activityType: 'unauthorized_access_attempt',
+          req,
+          userId: req.user._id,
+          customData: {
+            requiredRoles: roles,
+            userRole: req.user.role,
+            resource: req.route?.path
+          }
+        }).catch(err => console.error('ActivityTracker error:', err));
+      }
 
       return next(new AppError('Insufficient permissions for this action.', 403));
     }
 
-    // Track authorized access
-    await ActivityTracker.trackActivity({
-      activityType: 'authorized_access',
-      req,
-      userId: req.user._id,
-      customData: {
-        role: req.user.role,
-        resource: req.route?.path
-      }
-    });
+    // Optional: Track authorized access (non-blocking)
+    if (ActivityTracker) {
+      ActivityTracker.trackActivity({
+        activityType: 'authorized_access',
+        req,
+        userId: req.user._id,
+        customData: {
+          role: req.user.role,
+          resource: req.route?.path
+        }
+      }).catch(err => console.error('ActivityTracker error:', err));
+    }
 
     next();
-  });
+  };
 };
 
 /**
- * Optional authentication for public routes với user context
+ * Optional authentication - không fail nếu token invalid
  */
 const optionalAuth = catchAsync(async (req, res, next) => {
   let token;
   
-  // Extract token từ multiple sources
+  // Extract token
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies.jwt) {
+  } else if (req.cookies?.jwt) {
     token = req.cookies.jwt;
   }
 
   if (token) {
     try {
       const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-      const currentUser = await User.findById(decoded.id).select('+active');
+      const currentUser = await User.findById(decoded.id).select('+active +status +passwordChangedAt');
       
-      if (currentUser && currentUser.active && !currentUser.changedPasswordAfter(decoded.iat)) {
+      // Validate user
+      if (currentUser && 
+          currentUser.active && 
+          currentUser.status === 'active' &&
+          (!currentUser.changedPasswordAfter || !currentUser.changedPasswordAfter(decoded.iat))) {
         req.user = currentUser;
         
-        // Update last activity for authenticated users
-        await User.findByIdAndUpdate(decoded.id, {
+        // Update last activity (non-blocking)
+        User.findByIdAndUpdate(decoded.id, {
           lastActive: new Date(),
           lastIP: req.ip
-        });
+        }).exec().catch(err => console.error('Update lastActive error:', err));
       }
     } catch (error) {
-      // Invalid token but continue without user context
+      // Invalid token - continue without user context
       req.user = null;
     }
   }
@@ -237,7 +256,7 @@ const optionalAuth = catchAsync(async (req, res, next) => {
  */
 
 /**
- * Check resource ownership với flexible ownership patterns
+ * Check resource ownership - Optimized với fast paths
  */
 const checkOwnership = (Model, options = {}) => {
   const {
@@ -254,38 +273,43 @@ const checkOwnership = (Model, options = {}) => {
       return next(new AppError('Resource ID is required.', 400));
     }
 
-    // Find the resource
+    // Fast path: Admin bypass (nếu enabled)
+    if (allowAdmin && req.user.role === 'Admin') {
+      // Optionally load resource nếu cần
+      if (Model) {
+        const resource = await Model.findById(resourceId);
+        req.resource = resource;
+      }
+      return next();
+    }
+
+    // Fast path: Self ownership (for user profiles)
+    if (allowSelf && resourceId === req.user._id.toString()) {
+      req.resource = req.user; // User already loaded
+      return next();
+    }
+
+    // Load resource và check ownership
     const resource = await Model.findById(resourceId);
     if (!resource) {
       return next(new AppError('Resource not found.', 404));
     }
 
-    // Admin bypass (if allowed)
-    if (allowAdmin && req.user.role === 'Admin') {
-      req.resource = resource;
-      return next();
-    }
-
-    // Self ownership check (for user profiles)
-    if (allowSelf && resourceId === req.user._id.toString()) {
-      req.resource = resource;
-      return next();
-    }
-
-    // Resource ownership check
     const ownerId = resource[ownerField] || resource.user || resource.createdBy;
     if (!ownerId || ownerId.toString() !== req.user._id.toString()) {
-      // Track unauthorized resource access
-      await ActivityTracker.trackActivity({
-        activityType: 'unauthorized_resource_access',
-        req,
-        userId: req.user._id,
-        customData: {
-          resourceType: Model.modelName,
-          resourceId,
-          attemptedAction: req.method
-        }
-      });
+      // Optional: Track unauthorized access (non-blocking)
+      if (ActivityTracker) {
+        ActivityTracker.trackActivity({
+          activityType: 'unauthorized_resource_access',
+          req,
+          userId: req.user._id,
+          customData: {
+            resourceType: Model.modelName,
+            resourceId,
+            attemptedAction: req.method
+          }
+        }).catch(err => console.error('ActivityTracker error:', err));
+      }
 
       return next(new AppError('You can only access resources that you own.', 403));
     }
@@ -302,40 +326,43 @@ const checkOwnership = (Model, options = {}) => {
  */
 
 /**
- * Enhanced permission check với granular controls
+ * Granular permission check - Optimized sync operation
  */
 const checkPermission = (action, resource) => {
-  return catchAsync(async (req, res, next) => {
+  return (req, res, next) => {
     const user = req.user;
-    const permissions = user.permissions || [];
 
-    // Admin bypass
+    // Fast path: Admin bypass
     if (user.role === 'Admin') {
       return next();
     }
 
     // Check specific permission
+    const permissions = user.permissions || [];
     const hasPermission = permissions.some(permission => 
       permission.action === action && permission.resource === resource
     );
 
     if (!hasPermission) {
-      await ActivityTracker.trackActivity({
-        activityType: 'permission_denied',
-        req,
-        userId: user._id,
-        customData: {
-          requiredAction: action,
-          requiredResource: resource,
-          userPermissions: permissions
-        }
-      });
+      // Optional: Track denial (non-blocking)
+      if (ActivityTracker) {
+        ActivityTracker.trackActivity({
+          activityType: 'permission_denied',
+          req,
+          userId: user._id,
+          customData: {
+            requiredAction: action,
+            requiredResource: resource,
+            userPermissions: permissions
+          }
+        }).catch(err => console.error('ActivityTracker error:', err));
+      }
 
       return next(new AppError(`Permission denied for ${action} on ${resource}.`, 403));
     }
 
     next();
-  });
+  };
 };
 
 /**
@@ -344,38 +371,54 @@ const checkPermission = (action, resource) => {
 const authRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // limit each IP to 5 requests per windowMs
-  message: {
-    error: 'Too many authentication attempts. Please try again in 15 minutes.'
-  },
+  message: 'Too many authentication attempts. Please try again in 15 minutes.',
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    ActivityTracker.trackActivity({
-      activityType: 'auth_rate_limit_hit',
-      req,
-      customData: {
-        ip: req.ip,
-        userAgent: req.get('User-Agent')
-      }
-    });
+    // Optional: Track rate limit (non-blocking)
+    if (ActivityTracker) {
+      ActivityTracker.trackActivity({
+        activityType: 'auth_rate_limit_hit',
+        req,
+        customData: {
+          ip: req.ip,
+          userAgent: req.get('User-Agent')
+        }
+      }).catch(err => console.error('ActivityTracker error:', err));
+    }
 
     res.status(429).json({
       success: false,
       message: 'Too many authentication attempts. Please try again in 15 minutes.',
-      retryAfter: Math.round(req.rateLimit.resetTime / 1000)
+      retryAfter: req.rateLimit.resetTime ? Math.round(req.rateLimit.resetTime / 1000) : 900
     });
   }
 });
 
 /**
- * Verify user email before sensitive operations
+ * Verify email before sensitive operations - Fast sync check
  */
-const requireVerifiedEmail = catchAsync(async (req, res, next) => {
+const requireVerifiedEmail = (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Authentication required.', 401));
+  }
+  
   if (!req.user.emailVerified) {
     return next(new AppError('Email verification required for this action.', 403));
   }
+  
   next();
-});
+};
+
+/**
+ * Simple authenticated check (alternative to protect for simpler cases)
+ */
+const isAuthenticated = (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Authentication required.', 401));
+  }
+  next();
+};
 
 module.exports = {
   protect,
@@ -384,5 +427,6 @@ module.exports = {
   checkOwnership,
   checkPermission,
   authRateLimit,
-  requireVerifiedEmail
+  requireVerifiedEmail,
+  isAuthenticated
 };

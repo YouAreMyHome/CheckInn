@@ -19,9 +19,8 @@ const {
   updateUserStatus
 } = require('../controllers/admin.user.controller');
 
-// Import middlewares
-const { protect } = require('../middlewares/auth.simple.middleware');
-const { restrictTo } = require('../middlewares/role.middleware');
+// Import middlewares - using optimized auth middleware
+const { protect, restrictTo } = require('../middlewares/auth.middleware');
 const {
   validateUserCreate,
   validateUserUpdate,

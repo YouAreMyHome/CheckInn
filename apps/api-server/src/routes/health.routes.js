@@ -14,7 +14,7 @@ const {
   healthCheck,
   isConnected 
 } = require('../config/database');
-const { authMiddleware, requireAdmin } = require('../middlewares/auth.middleware');
+const { protect, restrictTo } = require('../middlewares/auth.middleware');
 const { logger } = require('../middlewares/logging.middleware');
 
 const router = express.Router();
@@ -81,7 +81,7 @@ router.get('/database', async (req, res) => {
  * @access  Admin only
  * @returns {Object} Comprehensive database metrics
  */
-router.get('/database/detailed', authMiddleware, requireAdmin, async (req, res) => {
+router.get('/database/detailed', protect, restrictTo('Admin'), async (req, res) => {
   try {
     const health = await healthCheck();
     const connectionStatus = getConnectionStatus();
@@ -131,7 +131,7 @@ router.get('/database/detailed', authMiddleware, requireAdmin, async (req, res) 
  * @access  Admin only
  * @returns {Object} Connection details and statistics
  */
-router.get('/database/connection', authMiddleware, requireAdmin, async (req, res) => {
+router.get('/database/connection', protect, restrictTo('Admin'), async (req, res) => {
   try {
     const connectionStatus = getConnectionStatus();
     
@@ -176,7 +176,7 @@ router.get('/database/connection', authMiddleware, requireAdmin, async (req, res
  * @access  Admin only
  * @returns {Object} Ping result với response time
  */
-router.post('/database/ping', authMiddleware, requireAdmin, async (req, res) => {
+router.post('/database/ping', protect, restrictTo('Admin'), async (req, res) => {
   try {
     if (!isConnected) {
       return res.status(503).json({
