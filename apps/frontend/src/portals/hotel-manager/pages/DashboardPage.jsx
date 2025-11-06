@@ -1,20 +1,68 @@
 import { useAuth } from '@hooks/useAuth';
-import { Building2, BedDouble, Calendar, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { usePartnerDashboard } from '@hooks/usePartner';
+import { Building2, BedDouble, Calendar, TrendingUp, Users, DollarSign, Loader2, AlertCircle } from 'lucide-react';
+import { formatCurrency } from '@services/revenueService';
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const { data: dashboardData, isLoading, error } = usePartnerDashboard();
 
-  const stats = [
-    { name: 'Total Hotels', value: '3', icon: Building2, change: '+1', changeType: 'positive' },
-    { name: 'Available Rooms', value: '47', icon: BedDouble, change: '+5', changeType: 'positive' },
-    { name: 'Active Bookings', value: '23', icon: Calendar, change: '+3', changeType: 'positive' },
-    { name: 'Monthly Revenue', value: '$12,450', icon: DollarSign, change: '+12%', changeType: 'positive' },
-  ];
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const recentBookings = [
-    { id: 1, guest: 'John Doe', hotel: 'Grand Hotel', room: 'Deluxe Suite', checkIn: '2024-01-15', status: 'confirmed' },
-    { id: 2, guest: 'Jane Smith', hotel: 'City Center Inn', room: 'Standard Room', checkIn: '2024-01-16', status: 'pending' },
-    { id: 3, guest: 'Mike Johnson', hotel: 'Beachfront Resort', room: 'Ocean View', checkIn: '2024-01-17', status: 'confirmed' },
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+          <p className="text-gray-900 font-semibold mb-2">Failed to load dashboard</p>
+          <p className="text-gray-600">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { stats, recentBookings = [], quickStats } = dashboardData?.data || {};
+
+  const statsCards = [
+    { 
+      name: 'Total Hotels', 
+      value: stats?.totalHotels || 0, 
+      icon: Building2, 
+      change: stats?.hotelsChange || '+0', 
+      changeType: 'positive' 
+    },
+    { 
+      name: 'Active Bookings', 
+      value: stats?.activeBookings || 0, 
+      icon: Calendar, 
+      change: stats?.bookingsChange || '+0', 
+      changeType: 'positive' 
+    },
+    { 
+      name: 'Today\'s Revenue', 
+      value: formatCurrency(stats?.todayRevenue || 0), 
+      icon: DollarSign, 
+      change: stats?.revenueChange || '+0%', 
+      changeType: stats?.revenueChangeType || 'positive' 
+    },
+    { 
+      name: 'Monthly Revenue', 
+      value: formatCurrency(stats?.monthlyRevenue || 0), 
+      icon: TrendingUp, 
+      change: stats?.monthlyChange || '+0%', 
+      changeType: 'positive' 
+    },
   ];
 
   return (
@@ -35,7 +83,7 @@ const DashboardPage = () => {
         {/* Stats */}
         <div className="mt-8">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((item) => (
+            {statsCards.map((item) => (
               <div key={item.name} className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="p-5">
                   <div className="flex items-center">
@@ -103,15 +151,59 @@ const DashboardPage = () => {
                 </li>
               ))}
             </ul>
+            {recentBookings.length === 0 && (
+              <div className="px-4 py-12 text-center">
+                <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500">No recent bookings</p>
+              </div>
+            )}
             <div className="bg-gray-50 px-4 py-3 sm:px-6">
               <div className="text-sm">
-                <a href="/hotel-manager/bookings" className="font-medium text-blue-600 hover:text-blue-500">
+                <a href="/partner/bookings" className="font-medium text-blue-600 hover:text-blue-500">
                   View all bookings →
                 </a>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Quick Stats Grid */}
+        {quickStats && (
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
+            {/* Total Guests */}
+            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-100 text-sm font-medium">Total Guests</p>
+                  <p className="text-3xl font-bold mt-2">{quickStats.totalGuests || 0}</p>
+                </div>
+                <Users className="w-12 h-12 text-purple-200" />
+              </div>
+            </div>
+
+            {/* Occupancy Rate */}
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-100 text-sm font-medium">Occupancy Rate</p>
+                  <p className="text-3xl font-bold mt-2">{quickStats.occupancyRate || 0}%</p>
+                </div>
+                <BedDouble className="w-12 h-12 text-green-200" />
+              </div>
+            </div>
+
+            {/* Total Earnings */}
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm font-medium">Total Earnings</p>
+                  <p className="text-3xl font-bold mt-2">{formatCurrency(quickStats.totalEarnings || 0)}</p>
+                </div>
+                <DollarSign className="w-12 h-12 text-blue-200" />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="mt-8">
@@ -120,21 +212,21 @@ const DashboardPage = () => {
               <h3 className="text-lg leading-6 font-medium text-gray-900">Quick Actions</h3>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <a
-                  href="/hotel-manager/hotels"
+                  href="/partner/hotels"
                   className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
                   <Building2 className="h-4 w-4 mr-2" />
                   Manage Hotels
                 </a>
                 <a
-                  href="/hotel-manager/rooms"
+                  href="/partner/rooms"
                   className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
                   <BedDouble className="h-4 w-4 mr-2" />
                   Add Rooms
                 </a>
                 <a
-                  href="/hotel-manager/analytics"
+                  href="/partner/analytics"
                   className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
                   <TrendingUp className="h-4 w-4 mr-2" />

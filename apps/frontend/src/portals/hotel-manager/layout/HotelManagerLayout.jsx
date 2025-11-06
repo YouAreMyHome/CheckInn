@@ -10,7 +10,8 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  DollarSign
 } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth';
 
@@ -27,13 +28,14 @@ const HotelManagerLayout = () => {
   };
 
   const navigation = [
-    { name: 'Dashboard', href: '/hotel-manager', icon: LayoutDashboard, current: location.pathname === '/hotel-manager' },
-    { name: 'My Hotels', href: '/hotel-manager/hotels', icon: Building2, current: location.pathname.startsWith('/hotel-manager/hotels') },
-    { name: 'Rooms', href: '/hotel-manager/rooms', icon: BedDouble, current: location.pathname.startsWith('/hotel-manager/rooms') },
-    { name: 'Bookings', href: '/hotel-manager/bookings', icon: Calendar, current: location.pathname.startsWith('/hotel-manager/bookings') },
-    { name: 'Guests', href: '/hotel-manager/guests', icon: Users, current: location.pathname.startsWith('/hotel-manager/guests') },
-    { name: 'Analytics', href: '/hotel-manager/analytics', icon: BarChart3, current: location.pathname.startsWith('/hotel-manager/analytics') },
-    { name: 'Settings', href: '/hotel-manager/settings', icon: Settings, current: location.pathname.startsWith('/hotel-manager/settings') },
+    { name: 'Dashboard', href: '/partner', icon: LayoutDashboard, current: location.pathname === '/partner' },
+    { name: 'My Hotels', href: '/partner/hotels', icon: Building2, current: location.pathname.startsWith('/partner/hotels') },
+    { name: 'Rooms', href: '/partner/rooms', icon: BedDouble, current: location.pathname.startsWith('/partner/rooms') },
+    { name: 'Bookings', href: '/partner/bookings', icon: Calendar, current: location.pathname.startsWith('/partner/bookings') },
+    { name: 'Guests', href: '/partner/guests', icon: Users, current: location.pathname.startsWith('/partner/guests') },
+    { name: 'Revenue', href: '/partner/revenue', icon: DollarSign, current: location.pathname.startsWith('/partner/revenue') },
+    { name: 'Analytics', href: '/partner/analytics', icon: BarChart3, current: location.pathname.startsWith('/partner/analytics') },
+    { name: 'Settings', href: '/partner/settings', icon: Settings, current: location.pathname.startsWith('/partner/settings') },
   ];
 
   return (

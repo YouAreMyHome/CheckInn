@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, AlertCircle, CheckCircle, Loader2, Mail, Lock, User, Phone, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, CheckCircle, Loader2, Mail, Lock, User, Phone, ArrowRight, Building2, Sparkles } from 'lucide-react';
 import { authService } from '@services';
 
 const RegisterPage = () => {
@@ -442,6 +442,61 @@ const RegisterPage = () => {
               )}
             </button>
           </form>
+
+          {/* Hotel Partner CTA */}
+          <div className="mt-8 relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">or</span>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <Link
+              to="/partner/register"
+              className="group relative block w-full rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 transition-all duration-300 overflow-hidden"
+            >
+              {/* Gradient background on hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              <div className="relative p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-blue-100 group-hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors duration-300">
+                      <Building2 className="h-6 w-6 text-blue-600 group-hover:text-white transition-colors duration-300" />
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+                        Register as Hotel Partner
+                      </h3>
+                      <Sparkles className="h-4 w-4 text-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">
+                      List your property and reach thousands of travelers
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        Earn revenue
+                      </span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Free registration
+                      </span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        24/7 support
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-300" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
 

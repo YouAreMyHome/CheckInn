@@ -2,7 +2,7 @@
 console.log('🔍 Testing middleware specifically...');
 
 try {
-  const middleware = require('./src/middlewares');
+  const middleware = require('../src/middlewares');
   console.log('✅ Middleware loaded');
   
   console.log('middleware.rateLimiting type:', typeof middleware.rateLimiting);
@@ -21,8 +21,8 @@ try {
 
 // Test loading auth controller + middleware together
 try {
-  const AuthController = require('./src/controllers/auth.controller');
-  const middleware = require('./src/middlewares');
+  const AuthController = require('../src/controllers/auth.controller');
+  const middleware = require('../src/middlewares');
   
   console.log('\n🔍 Testing route setup...');
   const express = require('express');

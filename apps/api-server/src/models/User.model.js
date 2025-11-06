@@ -104,7 +104,76 @@ const userSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
     expiresAt: Date,
     isRevoked: { type: Boolean, default: false }
-  }]
+  }],
+  
+  // Partner/Hotel Owner specific fields
+  partnerInfo: {
+    businessName: {
+      type: String,
+      trim: true
+    },
+    businessType: {
+      type: String,
+      enum: ['individual', 'company', 'chain'],
+      default: 'individual'
+    },
+    taxId: {
+      type: String,
+      trim: true // Tax identification number / Business registration number
+    },
+    businessLicense: {
+      type: String // URL to license document
+    },
+    businessAddress: {
+      street: String,
+      city: String,
+      state: String,
+      country: { type: String, default: 'Vietnam' },
+      zipCode: String
+    },
+    bankAccount: {
+      bankName: String,
+      accountNumber: String,
+      accountHolder: String,
+      swiftCode: String,
+      branchName: String
+    },
+    verificationStatus: {
+      type: String,
+      enum: ['pending', 'in_review', 'verified', 'rejected'],
+      default: 'pending'
+    },
+    verificationDocuments: [{
+      type: {
+        type: String,
+        enum: ['business_license', 'tax_certificate', 'id_card', 'bank_statement', 'other']
+      },
+      url: String,
+      uploadedAt: { type: Date, default: Date.now },
+      status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
+      },
+      rejectionReason: String
+    }],
+    verifiedAt: Date,
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User' // Admin who verified
+    },
+    rejectionReason: String,
+    onboardingCompleted: {
+      type: Boolean,
+      default: false
+    },
+    onboardingStep: {
+      type: Number,
+      default: 1,
+      min: 1,
+      max: 5
+    }
+  }
 }, {
   timestamps: true, // Tự động thêm createdAt và updatedAt
 });

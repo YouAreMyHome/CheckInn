@@ -22,6 +22,8 @@ const router = express.Router();
 // Import route modules - using main versions
 const authRoutes = require('./auth.routes');
 const registrationRoutes = require('./registration.routes');
+const partnerRoutes = require('./partner.routes');
+const revenueRoutes = require('./revenue.routes');
 // const userRoutes = require('./user.routes');
 // const healthRoutes = require('./health.routes');
 // const hotelRoutes = require('./hotel.routes');
@@ -52,6 +54,8 @@ router.get('/', (req, res) => {
 // Mount route modules
 router.use('/auth', authRoutes);                      // Authentication & authorization
 router.use('/register', registrationRoutes);          // Multi-step registration
+router.use('/partner', partnerRoutes);                // Partner/Hotel Manager operations
+router.use('/revenue', revenueRoutes);                // Revenue & analytics
 // router.use('/users', userRoutes);                  // User management (commented until created)
 // router.use('/health', healthRoutes);      // Health monitoring (commented until created)
 // router.use('/hotels', hotelRoutes);       // Hotel operations (commented until created)

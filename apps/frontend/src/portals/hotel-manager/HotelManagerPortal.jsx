@@ -9,6 +9,7 @@ import BookingsPage from './pages/BookingsPage';
 import GuestsPage from './pages/GuestsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
+import RevenuePage from './pages/RevenuePage';
 
 const HotelManagerPortal = () => {
   return (
@@ -20,6 +21,7 @@ const HotelManagerPortal = () => {
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="guests" element={<GuestsPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="revenue" element={<RevenuePage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
     </Routes>

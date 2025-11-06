@@ -25,6 +25,6 @@
       "@partner/*": ["./src/portals/hotel-manager/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests/TestNotifications.jsx", "tests/TestPage.jsx"],
   "exclude": ["node_modules", "dist"]
 }

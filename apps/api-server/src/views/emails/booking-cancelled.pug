@@ -1,0 +1,46 @@
+extends _layout
+
+block content
+  //- Tiêu đề màu đỏ để nhấn mạnh
+  h1(style="font-size: 24px; font-weight: 600; color: #D9534F; margin-top: 0; margin-bottom: 15px;") Đặt phòng của bạn đã được hủy
+
+  p.lead(style="font-size: 18px; font-weight: 500; margin-bottom: 25px; color: #333333;") 
+    | Chào #{customerName},
+
+  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 20px;") 
+    | Chúng tôi xác nhận yêu cầu hủy đặt phòng của bạn đã được xử lý thành công.
+
+  //- Box thông tin chính
+  table.info-box(border="0" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 5px; margin-bottom: 25px;")
+    tr
+      td.info-label(width="40%" style="padding: 15px; font-size: 16px; color: #777777;") Mã đặt phòng
+      td.info-data(width="60%" style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{bookingId}
+    tr
+      td.info-box-divider(colspan="2" style="border-top: 1px solid #e9ecef;")
+    tr
+      td.info-label(style="padding: 15px; font-size: 16px; color: #777777;") Khách sạn
+      td.info-data(style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{hotelName}
+    tr
+      td.info-box-divider(colspan="2" style="border-top: 1px solid #e9ecef;")
+    tr
+      td.info-label(style="padding: 15px; font-size: 16px; color: #777777;") Ngày hủy
+      td.info-data(style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{cancellationDate}
+
+  h3(style="color: #333; font-size: 20px; font-weight: 600; border-bottom: 1px solid #e9ecef; padding-bottom: 5px; margin-top: 10px;") Thông tin hoàn tiền
+
+  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 20px;") #{refundStatus}
+
+  //- CTA
+  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 30px 0;")
+    tr
+      td.button-container(align="center" style="padding: 10px 0 20px 0;")
+        a.button(href=findBookingLink style="background-color: #007bff; border-radius: 5px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 14px 28px; text-align: center; text-decoration: none;") 
+          | Tìm kiếm đặt phòng khác
+
+  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-top: 30px; margin-bottom: 20px;") 
+    | Cảm ơn bạn đã sử dụng dịch vụ của CheckInn.
+
+  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 0;") 
+    | Trân trọng,
+    br
+    strong Đội ngũ CheckInn

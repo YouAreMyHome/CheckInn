@@ -691,5 +691,109 @@ module.exports = {
   
   validateBookingCreate: validate(bookingSchemas.create),
   
-  validateReviewCreate: validate(reviewSchemas.create)
+  validateReviewCreate: validate(reviewSchemas.create),
+  
+  // Partner validations
+  validatePartnerRegistrationComplete: (req, res, next) => {
+    const completeSchema = Joi.object({
+      // Step 1: Basic Info
+      name: Joi.string().min(2).max(50).required(),
+      email: Joi.string().email().required(),
+      phone: Joi.string().pattern(/^[\d\s\-\(\)\+]{10,}$/).required(),
+      password: Joi.string().min(8).required(),
+      
+      // Step 2: Business Info
+      businessName: Joi.string().min(2).max(100).required(),
+      businessType: Joi.string().valid('individual', 'company', 'chain').default('individual'),
+      taxId: Joi.string().min(5).max(50).optional(),
+      businessAddress: Joi.object({
+        street: Joi.string().required(),
+        city: Joi.string().required(),
+        state: Joi.string().required(),
+        country: Joi.string().default('Vietnam'),
+        zipCode: Joi.string().optional()
+      }).required(),
+      
+      // Step 3: Bank Account
+      bankAccount: Joi.object({
+        bankName: Joi.string().min(2).max(100).required(),
+        accountNumber: Joi.string().min(5).max(50).required(),
+        accountHolder: Joi.string().min(2).max(100).required(),
+        swiftCode: Joi.string().min(8).max(11).optional(),
+        branchName: Joi.string().max(100).optional()
+      }).required(),
+      
+      // Step 4: Documents
+      documents: Joi.array().items(
+        Joi.object({
+          type: Joi.string().valid('business_license', 'tax_certificate', 'id_card', 'bank_statement', 'other').required(),
+          url: Joi.string().uri().required()
+        })
+      ).min(1).required()
+    });
+    
+    const { error, value } = completeSchema.validate(req.body);
+    if (error) {
+      return next(new AppError(error.details[0].message, 400));
+    }
+    req.body = value;
+    next();
+  },
+  
+  validatePartnerRegistration: (req, res, next) => {
+    const partnerSchema = Joi.object({
+      name: Joi.string().min(2).max(50).required(),
+      email: Joi.string().email().required(),
+      phone: Joi.string().pattern(/^[\d\s\-\(\)\+]{10,}$/).required(),
+      password: Joi.string().min(8).required(),
+      businessName: Joi.string().min(2).max(100),
+      businessType: Joi.string().valid('individual', 'company', 'chain').default('individual')
+    });
+    
+    const { error, value } = partnerSchema.validate(req.body);
+    if (error) {
+      return next(new AppError(error.details[0].message, 400));
+    }
+    req.body = value;
+    next();
+  },
+  
+  validateBusinessInfo: (req, res, next) => {
+    const businessSchema = Joi.object({
+      businessName: Joi.string().min(2).max(100).required(),
+      businessType: Joi.string().valid('individual', 'company', 'chain').required(),
+      taxId: Joi.string().min(5).max(50),
+      businessAddress: Joi.object({
+        street: Joi.string().required(),
+        city: Joi.string().required(),
+        state: Joi.string().required(),
+        country: Joi.string().default('Vietnam'),
+        zipCode: Joi.string()
+      })
+    });
+    
+    const { error, value } = businessSchema.validate(req.body);
+    if (error) {
+      return next(new AppError(error.details[0].message, 400));
+    }
+    req.body = value;
+    next();
+  },
+  
+  validateBankAccount: (req, res, next) => {
+    const bankSchema = Joi.object({
+      bankName: Joi.string().min(2).max(100).required(),
+      accountNumber: Joi.string().min(5).max(50).required(),
+      accountHolder: Joi.string().min(2).max(100).required(),
+      swiftCode: Joi.string().min(8).max(11),
+      branchName: Joi.string().max(100)
+    });
+    
+    const { error, value } = bankSchema.validate(req.body);
+    if (error) {
+      return next(new AppError(error.details[0].message, 400));
+    }
+    req.body = value;
+    next();
+  }
 };

@@ -174,7 +174,19 @@ const restrictTo = (...roles) => {
       return next(new AppError('Authentication required before authorization.', 401));
     }
 
-    if (!roles.includes(req.user.role)) {
+    // Normalize user roles: support `role` (string) or `roles` (array)
+    let userRoles = [];
+    if (Array.isArray(req.user.roles) && req.user.roles.length) {
+      userRoles = req.user.roles.map(r => String(r).toLowerCase());
+    } else if (req.user.role) {
+      userRoles = [String(req.user.role).toLowerCase()];
+    }
+
+    const allowed = roles.map(r => String(r).toLowerCase());
+
+    const hasRole = userRoles.some(ur => allowed.includes(ur));
+
+    if (!hasRole) {
       // Optional: Track unauthorized attempt (non-blocking)
       if (ActivityTracker) {
         ActivityTracker.trackActivity({
@@ -183,11 +195,15 @@ const restrictTo = (...roles) => {
           userId: req.user._id,
           customData: {
             requiredRoles: roles,
-            userRole: req.user.role,
+            userRoles: userRoles,
+            rawUserRole: req.user.role,
             resource: req.route?.path
           }
         }).catch(err => console.error('ActivityTracker error:', err));
       }
+
+      // Emit a helpful console message to aid debugging in dev
+      console.warn(`Authorization denied. Required: ${roles.join(', ')}. User roles: ${userRoles.join(', ') || 'none'}. User id: ${req.user._id}`);
 
       return next(new AppError('Insufficient permissions for this action.', 403));
     }

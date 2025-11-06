@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNotification } from './shared/components/NotificationProvider';
+import { useNotification } from '../src/shared/components/NotificationProvider';
 
 const TestNotifications = () => {
   const notify = useNotification();

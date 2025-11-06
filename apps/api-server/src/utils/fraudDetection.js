@@ -359,6 +359,33 @@ class FraudDetection {
   }
 
   /**
+   * Convenience wrapper used by auth middleware to quickly check
+   * whether a login attempt/session should be considered suspicious.
+   * Returns a compact object expected by the middleware.
+   *
+   * @param {string} userId
+   * @param {Object} deviceInfo
+   * @param {number} timeWindow - minutes
+   */
+  static async checkSuspiciousLogin(userId, deviceInfo = {}, timeWindow = 60) {
+    // Calculate a user-level risk score over recent activity
+    const assessment = await this.calculateRiskScore(userId, 'user', timeWindow);
+
+    const riskLevel = assessment.riskScore || 0;
+    const isSuspicious = riskLevel >= 60; // threshold used by middleware
+
+    // Compose reasons (compact) and include full assessment for debugging
+    const reasons = (assessment.factors || []).map(f => f.type || f.description || f);
+
+    return {
+      isSuspicious,
+      riskLevel,
+      reasons,
+      assessment
+    };
+  }
+
+  /**
    * MONITORING FUNCTIONS
    */
 

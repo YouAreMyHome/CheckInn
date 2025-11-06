@@ -200,6 +200,15 @@ const CustomerLayout = () => {
             </div>
             
             <div>
+              <h3 className="font-semibold text-gray-900 mb-4">Partners</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li><Link to="/partner/register" className="hover:text-gray-900">Become a Partner</Link></li>
+                <li><Link to="/partner/application-status" className="hover:text-gray-900 font-medium text-blue-600">Check Application Status</Link></li>
+                <li><a href="#" className="hover:text-gray-900">Partner Resources</a></li>
+              </ul>
+            </div>
+            
+            <div>
               <h3 className="font-semibold text-gray-900 mb-4">Support</h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li><a href="#" className="hover:text-gray-900">Help Center</a></li>

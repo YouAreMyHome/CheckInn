@@ -18,6 +18,10 @@ import BookingPage from './portals/customer/pages/BookingPage';
 import ProfilePage from './portals/customer/pages/ProfilePage';
 import ForgotPasswordPage from './portals/customer/pages/ForgotPasswordPage';
 
+// Hotel Manager Pages (Public)
+import PartnerRegisterPage from './portals/hotel-manager/pages/PartnerRegisterPage';
+import ApplicationStatusPage from './portals/hotel-manager/pages/ApplicationStatusPage';
+
 // Auth Components
 import { AuthProvider } from './shared/context/AuthContext.jsx';
 import ProtectedRoute from './shared/components/ProtectedRoute';
@@ -25,8 +29,8 @@ import { NotificationProvider } from './shared/components/NotificationProvider';
 
 // Shared Components
 import ErrorBoundary from './shared/components/ErrorBoundarySimple';
-import TestPage from './TestPage';
-import TestNotifications from './TestNotifications';
+import TestPage from '../tests/TestPage';
+import TestNotifications from '../tests/TestNotifications';
 import AdminAuthDemo from './portals/admin/components/AdminAuthDemo';
 import NotificationTest from './components/NotificationTest';
 
@@ -70,9 +74,15 @@ function App() {
                 {/* Old single-step registration backed up as RegisterPage.old.jsx */}
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 
+                {/* Partner Registration - Public Route */}
+                <Route path="/partner/register" element={<PartnerRegisterPage />} />
+                
+                {/* Partner Application Status - Public Route */}
+                <Route path="/partner/application-status" element={<ApplicationStatusPage />} />
+                
                 {/* Hotel Manager Portal - Protected */}
                 <Route 
-                  path="/hotel-manager/*" 
+                  path="/partner/*" 
                   element={
                     <ProtectedRoute allowedRoles={['HotelPartner']}>
                       <HotelManagerPortal />
