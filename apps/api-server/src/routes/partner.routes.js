@@ -47,13 +47,47 @@ router.get('/application-status/:email',
 
 /**
  * ============================================================================
- * PROTECTED ROUTES (HotelPartner only)
+ * ADMIN ROUTES (Partner Application Management)
  * ============================================================================
  */
 
-// Apply authentication
+/**
+ * Get all partner applications (Admin only)
+ */
+router.get('/applications',
+  middleware.auth.protect,
+  middleware.auth.restrictTo('Admin'),
+  partnerController.getAllApplications
+);
+
+/**
+ * Approve partner application (Admin only)
+ */
+router.patch('/applications/:id/approve',
+  middleware.auth.protect,
+  middleware.auth.restrictTo('Admin'),
+  partnerController.approvePartnerApplication
+);
+
+/**
+ * Reject partner application (Admin only)
+ */
+router.patch('/applications/:id/reject',
+  middleware.auth.protect,
+  middleware.auth.restrictTo('Admin'),
+  partnerController.rejectPartnerApplication
+);
+
+/**
+ * ============================================================================
+ * PROTECTED ROUTES (HotelPartner only - VERIFIED partners)
+ * ============================================================================
+ */
+
+// Apply authentication + verification check
 router.use(middleware.auth.protect);
 router.use(middleware.auth.restrictTo('HotelPartner'));
+router.use(middleware.checkPartnerVerified); // NEW: Check if partner is verified
 
 /**
  * Onboarding Flow

@@ -11,6 +11,7 @@ const rateLimiting = require('./rateLimiting.middleware');
 const securityMiddleware = require('./security.middleware');
 const loggingMiddleware = require('./logging.middleware');
 const errorController = require('../controllers/error.controller');
+const checkPartnerVerified = require('./checkPartnerVerified.middleware');
 
 /**
  * ============================================================================
@@ -73,6 +74,7 @@ module.exports = {
   security: securityMiddleware,
   logging: loggingMiddleware,
   errorHandler: errorController.globalErrorHandler,
+  checkPartnerVerified, // NEW: Partner verification check
   
   // Authentication middleware (use optimized middleware as default, fallback to simple)
   auth: authMiddleware || authSimpleMiddleware || {

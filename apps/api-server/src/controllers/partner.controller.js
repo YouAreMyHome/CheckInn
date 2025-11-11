@@ -77,7 +77,7 @@ exports.registerPartnerComplete = catchAsync(async (req, res, next) => {
         url: doc.url,
         status: 'pending'
       })),
-      verificationStatus: 'in_review',
+      verificationStatus: 'pending',
       onboardingCompleted: true,
       onboardingStep: 5
     }
@@ -249,7 +249,7 @@ exports.uploadDocuments = catchAsync(async (req, res, next) => {
     });
   });
   
-  partner.partnerInfo.verificationStatus = 'in_review';
+  partner.partnerInfo.verificationStatus = 'pending';
   partner.partnerInfo.onboardingStep = Math.max(partner.partnerInfo.onboardingStep, 4);
   
   await partner.save();
@@ -506,6 +506,125 @@ exports.getApplicationStatus = catchAsync(async (req, res, next) => {
     success: true,
     message: 'Application status retrieved successfully',
     data: applicationData
+  });
+});
+
+/**
+ * @desc    Get all partner applications (Admin only)
+ * @route   GET /api/partner/applications
+ * @access  Private/Admin
+ */
+exports.getAllApplications = catchAsync(async (req, res, next) => {
+  const { status, verificationStatus, search } = req.query;
+
+  // Build query
+  const query = { role: 'HotelPartner' };
+
+  if (status) {
+    query.status = status;
+  }
+
+  if (verificationStatus) {
+    query['partnerInfo.verificationStatus'] = verificationStatus;
+  }
+
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } },
+      { 'partnerInfo.businessName': { $regex: search, $options: 'i' } }
+    ];
+  }
+
+  const partners = await User.find(query)
+    .select('name email phone status partnerInfo createdAt updatedAt')
+    .sort('-createdAt');
+
+  // Calculate stats
+  const allPartners = await User.find({ role: 'HotelPartner' });
+  const stats = {
+    total: allPartners.length,
+    pending: allPartners.filter(p => p.partnerInfo?.verificationStatus === 'pending').length,
+    verified: allPartners.filter(p => p.partnerInfo?.verificationStatus === 'verified').length,
+    rejected: allPartners.filter(p => p.partnerInfo?.verificationStatus === 'rejected').length,
+    active: allPartners.filter(p => p.status === 'active').length,
+    suspended: allPartners.filter(p => p.status === 'suspended').length
+  };
+
+  res.status(200).json({
+    success: true,
+    message: `Retrieved ${partners.length} partner applications`,
+    data: {
+      partners,
+      stats
+    }
+  });
+});
+
+/**
+ * @desc    Approve partner application (Admin only)
+ * @route   PATCH /api/partner/applications/:id/approve
+ * @access  Private/Admin
+ */
+exports.approvePartnerApplication = catchAsync(async (req, res, next) => {
+  const partner = await User.findById(req.params.id);
+
+  if (!partner || partner.role !== 'HotelPartner') {
+    return next(new AppError('Partner application not found', 404));
+  }
+
+  // Ensure partnerInfo exists
+  if (!partner.partnerInfo) {
+    partner.partnerInfo = {};
+  }
+
+  // Update verification status
+  partner.partnerInfo.verificationStatus = 'verified';
+  partner.partnerInfo.verifiedAt = new Date();
+  partner.partnerInfo.verifiedBy = req.user._id;
+  partner.status = 'active';
+  await partner.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Partner application approved successfully',
+    data: { partner }
+  });
+});
+
+/**
+ * @desc    Reject partner application (Admin only)
+ * @route   PATCH /api/partner/applications/:id/reject
+ * @access  Private/Admin
+ */
+exports.rejectPartnerApplication = catchAsync(async (req, res, next) => {
+  const { rejectionReason } = req.body;
+
+  if (!rejectionReason) {
+    return next(new AppError('Rejection reason is required', 400));
+  }
+
+  const partner = await User.findById(req.params.id);
+
+  if (!partner || partner.role !== 'HotelPartner') {
+    return next(new AppError('Partner application not found', 404));
+  }
+
+  // Ensure partnerInfo exists
+  if (!partner.partnerInfo) {
+    partner.partnerInfo = {};
+  }
+
+  // Update verification status
+  partner.partnerInfo.verificationStatus = 'rejected';
+  partner.partnerInfo.rejectionReason = rejectionReason;
+  partner.status = 'inactive';
+  await partner.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Partner application rejected',
+    data: { partner }
   });
 });
 

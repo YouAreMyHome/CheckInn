@@ -25,20 +25,20 @@ import { useNotification } from '@components/NotificationProvider';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-const VerificationsPage = () => {
+const PartnerVerificationsPage = () => {
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [stats, setStats] = useState({
     pending: 0,
-    verified: 0,
+    approved: 0,
     rejected: 0,
     total: 0
   });
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const notification = useNotification();
+  const { showNotification } = useNotification();
 
   const fetchPartners = async () => {
     try {
@@ -64,7 +64,7 @@ const VerificationsPage = () => {
       setPartners(filtered);
     } catch (error) {
       console.error('Error fetching partner applications:', error);
-      notification.error('Failed to load partner applications');
+      showNotification('error', 'Failed to load partner applications');
       setPartners([]);
     } finally {
       setLoading(false);
@@ -84,11 +84,11 @@ const VerificationsPage = () => {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      notification.success('Partner application approved successfully');
+      showNotification('success', 'Partner application approved successfully');
       fetchPartners();
       setShowReviewModal(false);
     } catch (error) {
-      notification.error(error.response?.data?.message || 'Failed to approve application');
+      showNotification('error', error.response?.data?.message || 'Failed to approve application');
     }
   };
 
@@ -100,12 +100,12 @@ const VerificationsPage = () => {
         { rejectionReason: reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      notification.success('Partner application rejected');
+      showNotification('success', 'Partner application rejected');
       fetchPartners();
       setShowReviewModal(false);
     } catch (err) {
       console.error('Error rejecting application:', err);
-      notification.error('Failed to reject application');
+      showNotification('error', 'Failed to reject application');
     }
   };
 
@@ -132,8 +132,8 @@ const VerificationsPage = () => {
           color="yellow"
         />
         <StatsCard
-          title="Verified"
-          value={stats.verified}
+          title="Approved"
+          value={stats.approved}
           icon={CheckCircle}
           color="green"
         />
@@ -177,7 +177,7 @@ const VerificationsPage = () => {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="pending">Pending Review</option>
-              <option value="verified">Verified</option>
+              <option value="approved">Approved</option>
               <option value="rejected">Rejected</option>
               <option value="all">All Applications</option>
             </select>
@@ -579,4 +579,4 @@ const ReviewModal = ({ partner, onApprove, onReject, onClose }) => {
   );
 };
 
-export default VerificationsPage;
+export default PartnerVerificationsPage;

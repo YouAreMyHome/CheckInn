@@ -13,6 +13,7 @@ import EnhancedDashboardPage from './pages/EnhancedDashboardPage';
 import UsersPage from './pages/UsersPage';
 import HotelsPage from './pages/HotelsPage';
 import VerificationsPage from './pages/VerificationsPage';
+import PartnerVerificationsPage from './pages/PartnerVerificationsPage';
 import ReportsPage from './pages/ReportsPage';
 import ReviewsPage from './pages/ReviewsPage';
 import SecurityPage from './pages/SecurityPage';
@@ -39,6 +40,7 @@ const AdminPortal = () => {
         <Route path="users" element={<UsersPage />} />
         <Route path="hotels" element={<HotelsPage />} />
         <Route path="verifications" element={<VerificationsPage />} />
+        <Route path="partner-verifications" element={<PartnerVerificationsPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="reviews" element={<ReviewsPage />} />
         <Route path="security" element={<SecurityPage />} />

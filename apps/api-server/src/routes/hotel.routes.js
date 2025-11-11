@@ -54,30 +54,53 @@ router.get('/:id/amenities', HotelController.getHotelAmenities);
  * ============================================================================
  */
 
-// Apply search-specific middleware for authenticated routes
-middleware.utils.applyMiddleware(router, middleware.routes.search);
+// Apply authentication middleware
+router.use(middleware.auth.protect);
 
 /**
  * Hotel Management (Hotel Partners & Admin)
  */
-router.post('/', HotelController.createHotel);
+router.post('/', 
+  middleware.auth.restrictTo('HotelPartner', 'Admin'),
+  HotelController.createHotel
+);
 
 router
   .route('/:id')
-  .patch(HotelController.updateHotel)
-  .delete(HotelController.deleteHotel);
+  .patch(
+    middleware.auth.restrictTo('HotelPartner', 'Admin'),
+    HotelController.updateHotel
+  )
+  .delete(
+    middleware.auth.restrictTo('Admin'),
+    HotelController.deleteHotel
+  );
 
 /**
- * Hotel Operations
+ * Hotel Operations (Admin only)
  */
-router.patch('/:id/verify', HotelController.toggleHotelStatus);
-router.patch('/:id/feature', HotelController.toggleHotelStatus);
+router.patch('/:id/verify', 
+  middleware.auth.restrictTo('Admin'),
+  HotelController.toggleHotelStatus
+);
+
+router.patch('/:id/feature', 
+  middleware.auth.restrictTo('Admin'),
+  HotelController.toggleHotelStatus
+);
 
 /**
  * Media Management  
  */
-router.post('/:id/images', HotelController.setHotelImage);
-router.delete('/:id/images/:imageId', HotelController.setHotelImage);
+router.post('/:id/images', 
+  middleware.auth.restrictTo('HotelPartner', 'Admin'),
+  HotelController.setHotelImage
+);
+
+router.delete('/:id/images/:imageId', 
+  middleware.auth.restrictTo('HotelPartner', 'Admin'),
+  HotelController.setHotelImage
+);
 
 /**
  * ============================================================================

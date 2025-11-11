@@ -4,7 +4,26 @@ Tài liệu hệ thống quản lý cho Hotel Partners (Hotel Managers) trong Ch
 
 ---
 
-## 📚 Documents Overview
+## � CRITICAL UPDATES (Nov 7, 2025)
+
+### ⚠️ Critical Bugs Discovered
+Phát hiện **5 lỗi nghiêm trọng** trong partner verification workflow:
+
+1. **🔴 CRITICAL:** Missing status validation before approve/reject
+2. **🔴 HIGH:** No suspended partner check
+3. **🟠 HIGH:** Missing audit fields (rejectedAt, rejectedBy)
+4. **🟠 MEDIUM:** No email notifications
+5. **🟡 MEDIUM:** Weak validation for rejection reason
+
+**📄 Full Report:** [CRITICAL_BUGS_REPORT.md](./CRITICAL_BUGS_REPORT.md)  
+**📋 Action Plan:** [ACTION_PLAN_CRITICAL_BUGS.md](./ACTION_PLAN_CRITICAL_BUGS.md)  
+**✅ Task Tracker:** [TASK_TRACKER.md](./TASK_TRACKER.md)
+
+**Priority:** P0 - Fix immediately (Phase 1 due today)
+
+---
+
+## �📚 Documents Overview
 
 ### 1. **HOTEL_MANAGER_SYSTEM_COMPLETE.md**
 Tài liệu đầy đủ về hệ thống Hotel Manager:

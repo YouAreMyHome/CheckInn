@@ -163,7 +163,7 @@ const hotelSchema = new mongoose.Schema({
   // Business Status
   status: {
     type: String,
-    enum: ['active', 'inactive', 'pending', 'suspended'],
+    enum: ['active', 'inactive', 'pending', 'suspended', 'rejected'],
     default: 'pending',
     index: true
   },
@@ -178,6 +178,12 @@ const hotelSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
     index: true
+  },
+
+  rejectionReason: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Rejection reason cannot exceed 500 characters']
   },
   
   // Analytics & Reviews

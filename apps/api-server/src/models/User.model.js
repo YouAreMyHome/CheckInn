@@ -140,7 +140,7 @@ const userSchema = new mongoose.Schema({
     },
     verificationStatus: {
       type: String,
-      enum: ['pending', 'in_review', 'verified', 'rejected'],
+      enum: ['pending', 'verified', 'rejected'],
       default: 'pending'
     },
     verificationDocuments: [{
