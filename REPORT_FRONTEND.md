@@ -3,68 +3,48 @@
 ## 1. Thông Tin Chung
 *   **Tên ứng dụng:** `frontend`
 *   **Thư mục:** `apps/frontend/`
-*   **Loại:** Single Page Application (SPA)
-*   **Công cụ Build:** Vite
-*   **Framework:** React 19
+*   **Framework:** React 19 + Vite + React Router v7.
+*   **UI:** Ant Design + Tailwind CSS.
+*   **State Management:** React Query.
 
-## 2. Công Nghệ & Thư Viện Chính
-Dựa trên `package.json`, Frontend sử dụng stack hiện đại nhất hiện nay:
+## 2. Cấu Trúc "Portals" (Phân Hệ)
+Frontend được chia thành 3 phân hệ rõ rệt nằm trong `src/portals/`. Dưới đây là chi tiết các trang (Pages) và tính năng đã được triển khai:
 
-### Core
-*   **React 19 & React DOM 19:** Phiên bản mới nhất của React.
-*   **Vite:** Build tool siêu tốc thay thế Webpack.
-*   **React Router DOM (v7):** Quản lý điều hướng (Routing).
+### A. Customer Portal (Khách Hàng)
+Dành cho người dùng cuối tìm kiếm và đặt phòng.
+*   `HomePage`: Trang chủ.
+*   `SearchPage`: Trang tìm kiếm và lọc khách sạn.
+*   `HotelDetailPage`: Xem chi tiết thông tin khách sạn.
+*   `BookingPage` & `BookingConfirmationPage`: Quy trình đặt phòng và xác nhận.
+*   `ProfilePage`: Trang cá nhân người dùng.
+*   `BookingsPage`: Lịch sử đặt phòng của khách.
+*   `MultiStepRegisterPage`: Tính năng đăng ký tài khoản nhiều bước (nâng cao).
+*   `LoginPage`, `RegisterPage`, `ForgotPasswordPage`: Các trang xác thực cơ bản.
 
-### UI & UX
-*   **Tailwind CSS:** Framework CSS utility-first (phổ biến nhất hiện nay).
-*   **Ant Design (antd):** Thư viện UI Component cao cấp (thường dùng cho Admin Dashboard/Enterprise apps).
-*   **Framer Motion:** Thư viện xử lý Animation mượt mà.
-*   **Lucide React:** Bộ icon nhẹ và đẹp.
-*   **Clsx & Tailwind-merge:** Xử lý logic class CSS động.
+### B. Hotel Manager Portal (Đối Tác)
+Dashboard dành cho chủ khách sạn quản lý tài sản của mình.
+*   `DashboardPage`: Tổng quan hoạt động.
+*   `HotelsPage`: Danh sách khách sạn quản lý.
+*   `RoomsPage`: Quản lý danh sách phòng.
+*   `BookingsPage`: Quản lý đơn đặt phòng (Xác nhận/Hủy).
+*   `GuestsPage`: Quản lý thông tin khách lưu trú.
+*   `RevenuePage` & `AnalyticsPage`: Báo cáo doanh thu và phân tích số liệu.
+*   `PartnerRegisterPage`: Trang đăng ký trở thành đối tác.
+*   `SettingsPage`, `ApplicationStatusPage`: Cài đặt và trạng thái hồ sơ.
 
-### Data & State Management
-*   **@tanstack/react-query:** Quản lý server state, caching, data fetching (thay thế cho Redux trong việc call API).
-*   **Axios:** HTTP Client.
+### C. Admin Portal (Quản Trị Viên)
+Dashboard dành cho Super Admin quản lý toàn bộ hệ thống.
+*   `DashboardPage` & `EnhancedDashboardPage`: Bảng điều khiển trung tâm (phiên bản nâng cao có thể chứa nhiều biểu đồ hơn).
+*   `UsersPage`: Quản lý toàn bộ người dùng hệ thống.
+*   `HotelsPage`: Duyệt và quản lý tất cả khách sạn trên hệ thống.
+*   `VerificationsPage`: Trang xác minh danh tính/hồ sơ đối tác.
+*   `ReviewsPage`: Quản lý đánh giá/bình luận (Moderation).
+*   `ReportsPage`: Các báo cáo hệ thống.
+*   `SecurityPage`: Cài đặt bảo mật hệ thống.
+*   `SettingsPage`: Cấu hình chung.
+*   `AdminLoginPage`, `AdminForgotPasswordPage`, `AdminResetPasswordPage`: Luồng xác thực riêng cho Admin.
 
-### Charts
-*   **Recharts:** Vẽ biểu đồ (dùng cho dashboard thống kê).
-
-## 3. Cấu Trúc Mã Nguồn (Folder Structure)
-Frontend được tổ chức theo cấu trúc module hóa cao, chia theo "Portals" (Cổng thông tin):
-
-```
-src/
-├── assets/           # Tài nguyên tĩnh (Images, Fonts)
-├── components/       # Các UI components tái sử dụng chung (Global)
-├── portals/          # TRÁI TIM CỦA FRONTEND - Chứa các phân hệ
-│   ├── admin/          # Giao diện dành cho Quản trị viên
-│   ├── customer/       # Giao diện dành cho Khách đặt phòng
-│   └── hotel-manager/  # Giao diện dành cho Đối tác khách sạn
-├── shared/           # Logic chia sẻ (Hooks, Contexts, Constants)
-├── styles/           # Global CSS
-└── App.jsx           # Component gốc, thiết lập Routing
-```
-
-## 4. Phân Tích Chi Tiết Các Portals (`src/portals/`)
-Việc gom nhóm vào `portals` cho thấy chiến lược "Monolithic Frontend" - một ứng dụng duy nhất phục vụ nhiều vai trò, thay vì tách ra 3 domain khác nhau.
-
-*   **Admin Portal (`src/portals/admin/`):**
-    *   Dự kiến sử dụng Ant Design nhiều nhất cho các bảng biểu (Tables), Form quản lý.
-    *   Chức năng: Duyệt khách sạn, quản lý người dùng, xem báo cáo doanh thu toàn hệ thống.
-
-*   **Customer Portal (`src/portals/customer/`):**
-    *   Giao diện tập trung vào trải nghiệm người dùng (UX), tìm kiếm, hình ảnh đẹp.
-    *   Chức năng: Tìm kiếm khách sạn, xem chi tiết, đặt phòng, thanh toán, xem lịch sử.
-
-*   **Hotel Manager Portal (`src/portals/hotel-manager/`):**
-    *   Dashboard quản lý riêng cho từng khách sạn.
-    *   Chức năng: Quản lý phòng, giá cả, xác nhận đơn đặt phòng, xem báo cáo doanh thu riêng.
-
-## 5. Cấu Hình Build (Vite Config)
-*   Sử dụng `@vitejs/plugin-react`.
-*   Cấu hình Alias (đường dẫn tắt) để import dễ dàng (cần kiểm tra `vite.config.js` để biết chi tiết, ví dụ `@` trỏ về `src`).
-
-## 6. Điểm Nổi Bật
-*   **React 19:** Sử dụng phiên bản React mới nhất, có thể tận dụng các tính năng mới như Compiler (nếu được bật), Actions, v.v.
-*   **React Query:** Cho thấy tư duy quản lý state hiện đại, tập trung vào đồng bộ hóa dữ liệu server thay vì client store phức tạp.
-*   **Tailwind + Ant Design:** Sự kết hợp mạnh mẽ. Tailwind dùng cho layout/custom styling nhanh, Ant Design dùng cho các component phức tạp có sẵn (Datepicker, Table, Modal).
+## 3. Điểm Nổi Bật Về Kỹ Thuật
+*   **React Router v7:** Sử dụng phiên bản router mới nhất.
+*   **Lazy Loading:** Các Portal có vẻ được tách biệt tốt, hỗ trợ code splitting.
+*   **Component Reuse:** Có các folder `components` riêng cho từng portal (VD: `admin/components`, `hotel-manager/components`) bên cạnh `shared/components`, giúp code gọn gàng và dễ bảo trì.

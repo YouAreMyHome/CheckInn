@@ -4,73 +4,56 @@
 *   **Tên ứng dụng:** `api-server`
 *   **Thư mục:** `apps/api-server/`
 *   **Loại:** RESTful API Service
-*   **Cổng mặc định (Port):** 5000 (hoặc 5001 tùy cấu hình)
+*   **Cổng mặc định (Port):** 5000 (hoặc 5001)
 
 ## 2. Công Nghệ & Thư Viện Chính
-Dựa trên `package.json`, Backend sử dụng các công nghệ sau:
+*   **Core:** Express, Mongoose, Node.js.
+*   **Security:** Helmet, Cors, Bcryptjs, Jsonwebtoken, Express-mongo-sanitize, Xss-clean, Hpp.
+*   **Performance:** Redis, Compression, Rate-limit-redis.
+*   **Logging:** Morgan, Winston.
+*   **Services:** Cloudinary (Media), Nodemailer (Email).
 
-### Core Framework
-*   **Express:** Framework web server chính.
-*   **Mongoose:** ODM để làm việc với MongoDB.
-*   **Node.js:** Môi trường thực thi.
-
-### Bảo Mật (Security)
-*   **Helmet:** Thiết lập các HTTP headers bảo mật.
-*   **Cors:** Xử lý Cross-Origin Resource Sharing.
-*   **Bcryptjs:** Mã hóa mật khẩu (Hashing).
-*   **Jsonwebtoken:** Tạo và xác thực token đăng nhập.
-*   **Express-mongo-sanitize:** Ngăn chặn NoSQL Injection.
-*   **Xss-clean:** Ngăn chặn tấn công XSS.
-*   **Hpp:** Ngăn chặn HTTP Parameter Pollution.
-
-### Hiệu Năng & Tiện Ích
-*   **Redis & Rate-limit-redis:** Caching và giới hạn tốc độ request (Rate limiting).
-*   **Compression:** Nén response (Gzip).
-*   **Morgan & Winston:** Ghi log hệ thống (Logging).
-*   **Cloudinary:** Lưu trữ và quản lý hình ảnh/media trên cloud.
-*   **Nodemailer:** Gửi email (xác thực, thông báo).
-*   **Multer:** Xử lý upload file (multipart/form-data).
-
-## 3. Cấu Trúc Mã Nguồn (Folder Structure)
-Backend tuân theo kiến trúc MVC (Model-View-Controller) phổ biến:
-
+## 3. Cấu Trúc Mã Nguồn
 ```
 src/
-├── config/           # Cấu hình hệ thống (DB, Cloudinary, Redis...)
-├── controllers/      # Logic xử lý request, điều phối dữ liệu
-├── middlewares/      # Các hàm trung gian (Auth, Error Handling, Validation)
-├── models/           # Định nghĩa Schema dữ liệu MongoDB
-├── routes/           # Định nghĩa các API endpoints
-├── utils/            # Các hàm hỗ trợ (Helper functions)
-└── views/            # Templates (ví dụ: email template dùng Pug)
+├── config/           # Cấu hình hệ thống
+├── controllers/      # Logic xử lý request
+├── middlewares/      # Auth, Error, Validation
+├── models/           # Mongoose Schemas
+├── routes/           # API Endpoints
+├── utils/            # Helpers
+└── views/            # Email templates
 ```
 
-## 4. Mô Hình Dữ Liệu (Database Models)
-Hệ thống bao gồm các thực thể dữ liệu chính (`src/models/`):
+## 4. Danh Sách API & Trạng Thái (Cập Nhật)
+Dựa trên kiểm tra file `src/routes/index.js`, hệ thống API đang trong quá trình tích hợp hoặc bảo trì.
 
-1.  **User:** Quản lý thông tin người dùng (Admin, Partner, Customer).
-2.  **Hotel:** Thông tin khách sạn (Tên, địa chỉ, mô tả, tiện ích...).
-3.  **Room:** Thông tin phòng (Loại phòng, giá, tình trạng).
-4.  **Booking:** Đơn đặt phòng (Ngày check-in/out, khách hàng, trạng thái thanh toán).
-5.  **Review:** Đánh giá và bình luận của khách hàng.
-6.  **Transaction:** Lịch sử giao dịch tài chính.
-7.  **Revenue:** Theo dõi doanh thu.
-8.  **OTPVerification:** Mã xác thực OTP (thường dùng cho verify email/SĐT).
-9.  **PendingRegistration:** Đăng ký đang chờ duyệt (có thể dành cho Partner).
-10. **UserActivity:** Log hoạt động của người dùng.
+### Các Route Đang Hoạt Động (Active)
+*   `/api/auth`: Xác thực và phân quyền (Đăng nhập, Refresh token).
+*   `/api/register`: Đăng ký tài khoản (đặc biệt là Multi-step registration).
+*   `/api/partner`: Các nghiệp vụ dành cho Đối tác/Quản lý khách sạn.
+*   `/api/revenue`: Quản lý và báo cáo doanh thu.
+*   `/api/status`: Kiểm tra trạng thái server (Health check cơ bản).
+*   `/api/version`: Kiểm tra version API.
 
-## 5. Quy Trình Xử Lý Request Điển Hình
-1.  **Request** đi vào qua `server.js`.
-2.  Đi qua các **Middlewares** bảo mật (Helmet, CORS, Rate Limit).
-3.  Được định tuyến bởi **Routes** đến **Controller** tương ứng.
-4.  Trong **Controller**:
-    *   Validate dữ liệu đầu vào.
-    *   Gọi **Model** để truy xuất/cập nhật Database.
-    *   Xử lý logic nghiệp vụ.
-5.  Trả về **Response** JSON cho client.
+### Các Route Tạm Thời Vô Hiệu Hóa (Inactive/Commented Out)
+Code cho các module này đã tồn tại trong thư mục `routes/` nhưng chưa được mount vào router chính:
+*   `/api/users`: Quản lý người dùng.
+*   `/api/health`: Health check chi tiết.
+*   `/api/hotels`: Quản lý khách sạn (CRUD).
+*   `/api/rooms`: Quản lý phòng.
+*   `/api/bookings`: Hệ thống đặt phòng.
+*   `/api/reviews`: Hệ thống đánh giá.
 
-## 6. Scripts Bổ Trợ
-Thư mục `script/` chứa các scripts dùng để test chức năng gửi email:
-*   `test-email.js`
-*   `test-email-templates.js`
-*   `test-single-email.js`
+## 5. Mô Hình Dữ Liệu (Database Models)
+Các Schema đã được định nghĩa đầy đủ trong `src/models/`:
+1.  **User**: Thông tin người dùng.
+2.  **Hotel**: Thông tin khách sạn.
+3.  **Room**: Thông tin phòng.
+4.  **Booking**: Đơn đặt phòng.
+5.  **Review**: Đánh giá.
+6.  **Transaction**: Giao dịch.
+7.  **Revenue**: Doanh thu.
+8.  **OTPVerification**: Mã OTP.
+9.  **PendingRegistration**: Đăng ký chờ duyệt.
+10. **UserActivity**: Log hoạt động.
