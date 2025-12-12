@@ -287,13 +287,13 @@ if (adminUserRoutes) {
   console.log('✅ Admin user routes mounted at /api/admin/users');
 }
 
-// Connect to MongoDB when server starts
-if (connectDB) {
+// Connect to MongoDB when server starts (skip in test environment)
+if (connectDB && process.env.NODE_ENV !== 'test') {
   connectDB().catch(err => {
     console.error('⚠️  Failed to connect to MongoDB:', err.message);
     console.log('🔄 Server will continue without database');
   });
-} else {
+} else if (process.env.NODE_ENV !== 'test') {
   console.log('⚠️  No database connection function available');
 }
 
@@ -326,19 +326,20 @@ app.use((error, req, res, next) => {
 
 /**
  * ============================================================================
- * SERVER STARTUP
+ * SERVER STARTUP (skip in test environment)
  * ============================================================================
  */
 
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || 'localhost';
 
-// Start server
-const server = app.listen(PORT, HOST, () => {
-  console.log(`✅ Server started successfully on ${HOST}:${PORT}`);
-  console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🕒 Started at: ${new Date().toISOString()}`);
-  console.log(`
+// Start server only if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  const server = app.listen(PORT, HOST, () => {
+    console.log(`✅ Server started successfully on ${HOST}:${PORT}`);
+    console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🕒 Started at: ${new Date().toISOString()}`);
+    console.log(`
   🚀 CheckInn API Server is running!
   
   📍 Server: http://${HOST}:${PORT}
@@ -348,55 +349,56 @@ const server = app.listen(PORT, HOST, () => {
   
   Ready to accept connections!
   `);
-});
-
-/**
- * ============================================================================
- * GRACEFUL SHUTDOWN
- * ============================================================================
- */
-
-// Handle graceful shutdown
-const gracefulShutdown = async (signal) => {
-  console.log(`\n⚠️  Received ${signal}. Shutting down gracefully...`);
-
-  server.close(async (err) => {
-    if (err) {
-      console.error('❌ Error during server shutdown:', err.message);
-      process.exit(1);
-    }
-
-    console.log('✅ Server closed successfully');
-
-    // Close database connection gracefully
-    try {
-      if (gracefulDisconnect) {
-        await gracefulDisconnect();
-      } else {
-        console.log('✅ Server shutdown complete');
-      }
-      process.exit(0);
-    } catch (error) {
-      console.error('❌ Error during database disconnection:', error.message);
-      process.exit(1);
-    }
   });
 
-  // Force shutdown after 30 seconds
-  setTimeout(() => {
-    console.error('❌ Forced shutdown - timeout exceeded');
-    process.exit(1);
-  }, 30000);
-};
+  /**
+   * ============================================================================
+   * GRACEFUL SHUTDOWN
+   * ============================================================================
+   */
 
-// Listen for shutdown signals
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+  // Handle graceful shutdown
+  const gracefulShutdown = async (signal) => {
+    console.log(`\n⚠️  Received ${signal}. Shutting down gracefully...`);
 
-// Handle process warnings
-process.on('warning', (warning) => {
-  console.warn('⚠️  Process warning:', warning.message);
-});
+    server.close(async (err) => {
+      if (err) {
+        console.error('❌ Error during server shutdown:', err.message);
+        process.exit(1);
+      }
+
+      console.log('✅ Server closed successfully');
+
+      // Close database connection gracefully
+      try {
+        if (gracefulDisconnect) {
+          await gracefulDisconnect();
+        } else {
+          console.log('✅ Server shutdown complete');
+        }
+        process.exit(0);
+      } catch (error) {
+        console.error('❌ Error during database disconnection:', error.message);
+        process.exit(1);
+      }
+    });
+
+    // Force shutdown after 30 seconds
+    setTimeout(() => {
+      console.error('❌ Forced shutdown - timeout exceeded');
+      process.exit(1);
+    }, 30000);
+  };
+
+  // Listen for shutdown signals
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+  // Handle process warnings
+  process.on('warning', (warning) => {
+    console.warn('⚠️  Process warning:', warning.message);
+  });
+}
 
 // Export app for testing
 module.exports = app;

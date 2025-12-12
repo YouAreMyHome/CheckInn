@@ -188,6 +188,11 @@ const hotelSchema = new mongoose.Schema({
   
   // Analytics & Reviews
   stats: {
+    totalRooms: {
+      type: Number,
+      default: 0,
+      min: [0, 'Room count cannot be negative']
+    },
     averageRating: {
       type: Number,
       default: 0,

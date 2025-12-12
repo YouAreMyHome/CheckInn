@@ -354,22 +354,25 @@ exports.getRegistrationSession = catchAsync(async (req, res, next) => {
 /**
  * Cleanup expired sessions (chạy định kỳ)
  * Sessions expire after 30 minutes
+ * Skip in test environment
  */
-setInterval(() => {
-  const now = Date.now();
-  const SESSION_EXPIRY = 30 * 60 * 1000; // 30 minutes
-  let cleanedCount = 0;
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => {
+    const now = Date.now();
+    const SESSION_EXPIRY = 30 * 60 * 1000; // 30 minutes
+    let cleanedCount = 0;
 
-  for (const [email, session] of registrationSessions.entries()) {
-    if (now - session.createdAt > SESSION_EXPIRY) {
-      registrationSessions.delete(email);
-      cleanedCount++;
+    for (const [email, session] of registrationSessions.entries()) {
+      if (now - session.createdAt > SESSION_EXPIRY) {
+        registrationSessions.delete(email);
+        cleanedCount++;
+      }
     }
-  }
 
-  if (cleanedCount > 0) {
-    console.log(`[Registration] Cleaned up ${cleanedCount} expired sessions`);
-  }
-}, 10 * 60 * 1000); // Run every 10 minutes
+    if (cleanedCount > 0) {
+      console.log(`[Registration] Cleaned up ${cleanedCount} expired sessions`);
+    }
+  }, 10 * 60 * 1000); // Run every 10 minutes
+}
 
 module.exports = exports;

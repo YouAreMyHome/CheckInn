@@ -197,9 +197,11 @@ class OTPService {
 // Singleton instance
 const otpService = new OTPService();
 
-// Auto cleanup expired OTPs every 5 minutes
-setInterval(() => {
-  otpService.cleanupExpiredOTPs();
-}, 5 * 60 * 1000);
+// Auto cleanup expired OTPs every 5 minutes (skip in test environment)
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => {
+    otpService.cleanupExpiredOTPs();
+  }, 5 * 60 * 1000);
+}
 
 module.exports = otpService;

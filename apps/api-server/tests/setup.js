@@ -24,12 +24,14 @@ beforeAll(async () => {
 });
 
 // Cleanup after each test
-afterEach(async () => {
-  const collections = mongoose.connection.collections;
-  for (const key in collections) {
-    await collections[key].deleteMany({});
-  }
-});
+// NOTE: Commented out to allow test suites control their own cleanup strategy
+// Some tests need data to persist across multiple test cases within a suite
+// afterEach(async () => {
+//   const collections = mongoose.connection.collections;
+//   for (const key in collections) {
+//     await collections[key].deleteMany({});
+//   }
+// });
 
 // Cleanup after all tests
 afterAll(async () => {

@@ -9,10 +9,9 @@
  */
 
 const express = require('express');
-const RoomController = require('../controllers/room.controller');
-const middleware = require('../middlewares');
-
 const router = express.Router();
+const roomController = require('../controllers/room.controller');
+const middleware = require('../middlewares');
 
 /**
  * ============================================================================
@@ -21,16 +20,21 @@ const router = express.Router();
  */
 
 /**
- * Room Discovery & Search
+ * GET /api/rooms/availability - Search available rooms (CRITICAL: Must be before /:id)
+ * Query params: hotelId, checkIn, checkOut, guests
  */
-router.get('/', RoomController.getAllRooms);
-router.get('/:id', RoomController.getRoomById);
+router.get('/availability', roomController.getAvailableRooms);
 
 /**
- * Availability & Pricing (Public for browsing)
+ * GET /api/rooms/:id - Get single room details
  */
-router.post('/check-availability', RoomController.checkAvailability);
-router.post('/pricing', RoomController.getRoomPricing);
+router.get('/:id', roomController.getRoomById);
+
+/**
+ * GET /api/rooms/hotel/:hotelId - Get all rooms for a hotel
+ * Supports filtering, sorting, pagination via APIFeatures
+ */
+router.get('/hotel/:hotelId', roomController.getRoomsByHotel);
 
 /**
  * ============================================================================
@@ -38,34 +42,49 @@ router.post('/pricing', RoomController.getRoomPricing);
  * ============================================================================
  */
 
-// Apply protected route middleware for authenticated operations
-
-
-/**
- * Room Management (Hotel Owners & Admin)
- */
-router.post('/', RoomController.createRoom);
-
-router
-  .route('/:id')
-  .patch(RoomController.updateRoom)
-  .delete(RoomController.deleteRoom);
+// Apply authentication middleware for all routes below
+router.use(middleware.auth.protect);
 
 /**
- * Room Operations
+ * POST /api/rooms - Create new room (HotelPartner/Admin only)
+ * Validates hotel ownership before creation
  */
-router.patch('/bulk-status', RoomController.bulkUpdateStatus);
-router.get('/:id/analytics', RoomController.getRoomAnalytics);
+router.post('/', 
+  middleware.auth.restrictTo('HotelPartner', 'Admin'), 
+  roomController.createRoom
+);
+
+/**
+ * PATCH /api/rooms/:id - Update room details (HotelPartner/Admin only)
+ * Validates hotel ownership before update
+ */
+router.patch('/:id', 
+  middleware.auth.restrictTo('HotelPartner', 'Admin'), 
+  roomController.updateRoom
+);
+
+/**
+ * DELETE /api/rooms/:id - Delete room (HotelPartner/Admin only)
+ * Blocks deletion if room has future bookings
+ */
+router.delete('/:id', 
+  middleware.auth.restrictTo('HotelPartner', 'Admin'), 
+  roomController.deleteRoom
+);
 
 /**
  * ============================================================================
- * ADMIN & HOTEL OWNER ROUTES
+ * FUTURE FEATURES (Not yet implemented - returns 501)
  * ============================================================================
  */
+router.patch('/bulk-status', 
+  middleware.auth.restrictTo('HotelPartner', 'Admin'),
+  roomController.bulkUpdateStatus
+);
 
-/**
- * Reports & Analytics  
- */
-router.get('/reports/occupancy', RoomController.getOccupancyReport);
+router.get('/analytics/:id',
+  middleware.auth.restrictTo('HotelPartner', 'Admin'),
+  roomController.getRoomAnalytics
+);
 
 module.exports = router;
