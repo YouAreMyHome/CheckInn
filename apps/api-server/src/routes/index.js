@@ -28,7 +28,7 @@ const revenueRoutes = require('./revenue.routes');
 // const healthRoutes = require('./health.routes');
 // const hotelRoutes = require('./hotel.routes');
 // const roomRoutes = require('./room.routes');  
-// const bookingRoutes = require('./booking.routes');
+const bookingRoutes = require('./booking.routes');
 // const reviewRoutes = require('./review.routes');
 
 // API Documentation route
@@ -40,10 +40,10 @@ router.get('/', (req, res) => {
       authentication: '/api/auth',
       registration: '/api/register',
       users: '/api/users',
-      health: '/api/health'
+      health: '/api/health',
       // hotels: '/api/hotels',
       // rooms: '/api/rooms', 
-      // bookings: '/api/bookings',
+      bookings: '/api/bookings',
       // reviews: '/api/reviews'
     },
     documentation: '/api/docs',
@@ -60,7 +60,7 @@ router.use('/revenue', revenueRoutes);                // Revenue & analytics
 // router.use('/health', healthRoutes);      // Health monitoring (commented until created)
 // router.use('/hotels', hotelRoutes);       // Hotel operations (commented until created)
 // router.use('/rooms', roomRoutes);         // Room management (commented until created)
-// router.use('/bookings', bookingRoutes);   // Booking system (commented until created)
+router.use('/bookings', bookingRoutes);   // Booking system (commented until created)
 // router.use('/reviews', reviewRoutes);     // Review system (commented until created)
 
 // Basic health check endpoint (lightweight)

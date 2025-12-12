@@ -1,66 +1,29 @@
-/**
- * Booking Routes for CheckInn Hotel Booking Platform
- * 
- * Defines all booking-related API endpoints với complex business logic
- * và proper access control
- * 
- * @author CheckInn Team
- * @version 1.0.0
- */
-
+// routes/booking.routes.js
 const express = require('express');
 const BookingController = require('../controllers/booking.controller');
-const middleware = require('../middlewares');
+// Import auth middleware từ file bạn đã upload
+const auth = require('../middlewares/auth.middleware'); 
 
 const router = express.Router();
 
-/**
- * ============================================================================
- * PROTECTED ROUTES (Authentication required for all booking operations)
- * ============================================================================
- */
+// --- 1. PROTECT ALL ROUTES ---
+// Mọi booking đều cần đăng nhập. 
+router.use(auth.protect); 
 
-// Apply booking-specific middleware with enhanced security
-
-
-/**
- * Booking Management
- */
-router
-  .route('/')
-  .post(BookingController.createBooking)
-  .get(BookingController.getAllBookings); // Admin & hotel owners only (handled in controller)
-
-/**
- * User Booking Operations
- */
+// --- 2. CUSTOMER ROUTES ---
 router.get('/my-bookings', BookingController.getMyBookings);
+router.post('/', BookingController.createBooking); // Tạo booking
+router.patch('/:id/cancel', BookingController.cancelBooking); // Hủy booking
+router.get('/:id', BookingController.getBookingById); // Xem chi tiết
 
-router
-  .route('/:id')
-  .get(BookingController.getBookingById);
+// --- 3. PARTNER / ADMIN ROUTES ---
+// Chỉ Partner và Admin mới được xem list tổng hoặc confirm/checkin
+router.use(auth.restrictTo('HotelPartner', 'Admin'));
 
-/**
- * Booking Status Management
- */
+router.get('/', BookingController.getAllBookings);
 router.patch('/:id/confirm', BookingController.confirmBooking);
-router.patch('/:id/cancel', BookingController.cancelBooking);
-
-/**
- * Hotel Staff Operations (Check-in/Check-out)
- */
 router.patch('/:id/check-in', BookingController.checkInBooking);
 router.patch('/:id/check-out', BookingController.checkOutBooking);
-
-/**
- * ============================================================================
- * ANALYTICS & REPORTS
- * ============================================================================
- */
-
-/**
- * Booking Analytics (Hotel Owners & Admin)
- */
 router.get('/analytics/overview', BookingController.getBookingAnalytics);
 
 module.exports = router;
