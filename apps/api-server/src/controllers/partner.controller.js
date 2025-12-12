@@ -567,15 +567,44 @@ exports.getAllApplications = catchAsync(async (req, res, next) => {
  * @access  Private/Admin
  */
 exports.approvePartnerApplication = catchAsync(async (req, res, next) => {
+  console.log('[DEBUG] Approve request received');
+  console.log('[DEBUG] Partner ID:', req.params.id);
+  
   const partner = await User.findById(req.params.id);
+  
+  console.log('[DEBUG] Partner found:', !!partner);
+  if (partner) {
+    console.log('[DEBUG] Partner role:', partner.role);
+    console.log('[DEBUG] Is HotelPartner?:', partner.role === 'HotelPartner');
+  }
 
   if (!partner || partner.role !== 'HotelPartner') {
     return next(new AppError('Partner application not found', 404));
   }
 
+  // ✅ FIX BUG #2: Check if partner is suspended
+  if (partner.status === 'suspended') {
+    return next(new AppError('Cannot approve suspended partner. Please unsuspend the account first.', 400));
+  }
+
   // Ensure partnerInfo exists
   if (!partner.partnerInfo) {
     partner.partnerInfo = {};
+  }
+
+  // ✅ FIX BUG #1: Validate current verification status
+  const currentStatus = partner.partnerInfo.verificationStatus;
+
+  if (currentStatus === 'verified') {
+    return next(new AppError('Partner application is already verified', 400));
+  }
+
+  if (currentStatus === 'rejected') {
+    return next(new AppError('Cannot approve rejected application. Partner must resubmit their application.', 400));
+  }
+
+  if (currentStatus !== 'pending') {
+    return next(new AppError('Only pending applications can be approved', 400));
   }
 
   // Update verification status
@@ -613,6 +642,21 @@ exports.rejectPartnerApplication = catchAsync(async (req, res, next) => {
   // Ensure partnerInfo exists
   if (!partner.partnerInfo) {
     partner.partnerInfo = {};
+  }
+
+  // ✅ FIX BUG #1: Validate current verification status
+  const currentStatus = partner.partnerInfo.verificationStatus;
+
+  if (currentStatus === 'verified') {
+    return next(new AppError('Cannot reject already verified partner. Please revoke verification first.', 400));
+  }
+
+  if (currentStatus === 'rejected') {
+    return next(new AppError('Partner application is already rejected', 400));
+  }
+
+  if (currentStatus !== 'pending') {
+    return next(new AppError('Only pending applications can be rejected', 400));
   }
 
   // Update verification status

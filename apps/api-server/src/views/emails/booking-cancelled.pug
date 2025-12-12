@@ -1,46 +1,81 @@
 extends _layout
 
 block content
-  //- Tiêu đề màu đỏ để nhấn mạnh
-  h1(style="font-size: 24px; font-weight: 600; color: #D9534F; margin-top: 0; margin-bottom: 15px;") Đặt phòng của bạn đã được hủy
+  //- Empathetic title with modern design
+  h1(style="color: var(--text-primary);") Đặt phòng đã được hủy ✗
 
-  p.lead(style="font-size: 18px; font-weight: 500; margin-bottom: 25px; color: #333333;") 
-    | Chào #{customerName},
+  p.lead
+    | Chào
+    span.highlight #{customerName}
+    | , chúng tôi đã xử lý yêu cầu hủy của bạn.
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 20px;") 
-    | Chúng tôi xác nhận yêu cầu hủy đặt phòng của bạn đã được xử lý thành công.
+  p Chúng tôi đã xử lý thành công yêu cầu hủy đặt phòng của bạn. Chúng tôi hiểu rằng kế hoạch có thể thay đổi bất ngờ, và chúng tôi luôn sẵn sàng hỗ trợ bạn trong những lần đặt phòng tiếp theo.
 
-  //- Box thông tin chính
-  table.info-box(border="0" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 5px; margin-bottom: 25px;")
+  //- Cancellation Details với modern table design và accessibility
+  table.info-box(border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin: 40px 0;")
     tr
-      td.info-label(width="40%" style="padding: 15px; font-size: 16px; color: #777777;") Mã đặt phòng
-      td.info-data(width="60%" style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{bookingId}
+      td.info-box-header
+        table(border="0" cellpadding="0" cellspacing="0" width="100%")
+          tr
+            td(width="60" valign="middle" style="padding-right: 15px;")
+              p(style="font-size: 35px; margin: 0; line-height: 1;") ■
+            td(valign="middle")
+              h3(style="margin: 0; font-size: 24px; font-weight: 600; color: white;") Chi tiết hủy phòng
     tr
-      td.info-box-divider(colspan="2" style="border-top: 1px solid #e9ecef;")
+      td.info-box-body
+        table(border="0" cellpadding="0" cellspacing="0" width="100%" role="table" aria-label="Chi tiết hủy phòng" style="border-collapse: collapse;")
+          tr(style="background: var(--card-bg); border-bottom: 1px solid var(--border-color);")
+            td(style="padding: 15px 20px; font-weight: 600; color: var(--text-primary); border-right: 1px solid var(--border-color); width: 30%;") Mã đặt phòng
+            td(style="padding: 15px 20px; color: var(--text-primary); font-weight: 500;") #{bookingId}
+          tr(style="background: var(--secondary-50); border-bottom: 1px solid var(--border-color);")
+            td(style="padding: 15px 20px; font-weight: 600; color: var(--text-primary); border-right: 1px solid var(--border-color);") Khách sạn
+            td(style="padding: 15px 20px; color: var(--text-primary); font-weight: 500;") #{hotelName}
+          tr(style="background: var(--card-bg);")
+            td(style="padding: 15px 20px; font-weight: 600; color: var(--text-primary); border-right: 1px solid var(--border-color);") Thời gian hủy
+            td(style="padding: 15px 20px; color: var(--text-primary); font-weight: 500;") #{cancellationDate}
+
+  h3(style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin: 60px 0 30px 0; text-align: center;") ◉ Thông tin hoàn tiền
+
+  table.alert.alert-info(border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin: 35px 0;", role="region", aria-labelledby="refund-info-heading")
     tr
-      td.info-label(style="padding: 15px; font-size: 16px; color: #777777;") Khách sạn
-      td.info-data(style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{hotelName}
+      td(style="padding: 35px;")
+        table(border="0" cellpadding="0" cellspacing="0" width="100%")
+          tr
+            td(align="center" style="padding-bottom: 20px;")
+              p(style="font-size: 40px; margin: 0; line-height: 1;") ◉
+              h4(style="margin: 15px 0 0 0; font-size: 20px; color: var(--text-primary); font-weight: 600;", id="refund-info-heading") Trạng thái hoàn tiền
+            td
+              p(style="margin: 0; font-size: 17px; color: var(--text-secondary); line-height: 1.7; text-align: center;")
+                | #{refundStatus}
+
+  //- Recovery CTA với Secondary Button
+  table.button-container(border="0" cellpadding="0" cellspacing="0" width="100%")
     tr
-      td.info-box-divider(colspan="2" style="border-top: 1px solid #e9ecef;")
+      td.button-container(align="center")
+        a.button-secondary(href=findBookingLink) Khám phá khách sạn mới
+
+  h3(style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin: 60px 0 30px 0; text-align: center;") ♥ Chúng tôi vẫn ở đây để hỗ trợ
+
+  table.alert.alert-success(border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin: 35px 0;", role="region", aria-labelledby="support-heading")
     tr
-      td.info-label(style="padding: 15px; font-size: 16px; color: #777777;") Ngày hủy
-      td.info-data(style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{cancellationDate}
+      td(style="padding: 35px;")
+        table(border="0" cellpadding="0" cellspacing="0" width="100%")
+          tr
+            td(align="center" style="padding-bottom: 25px;")
+              p(style="font-size: 50px; margin: 0; line-height: 1;") ♥
+              h4(style="margin: 15px 0 0 0; font-size: 22px; color: var(--text-primary); font-weight: 600;", id="support-heading") Lựa chọn thay thế thông minh hơn
+            td
+              p(style="margin: 0; font-size: 17px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; text-align: center;")
+                | Chúng tôi có thể hỗ trợ bạn tìm những khách sạn thay thế với giá cả cạnh tranh.
+              p(style="margin: 0; font-size: 16px; color: var(--text-muted); line-height: 1.6; text-align: center;")
+                | • Giá tốt hơn đến 30% so với đặt phòng trực tiếp
+                | • Ưu đãi đặc biệt cho khách hàng thân thiết
+                | • Hỗ trợ 24/7 với đội ngũ chuyên nghiệp
 
-  h3(style="color: #333; font-size: 20px; font-weight: 600; border-bottom: 1px solid #e9ecef; padding-bottom: 5px; margin-top: 10px;") Thông tin hoàn tiền
+  p(style="font-size: 18px; line-height: 1.7; color: var(--text-primary); margin: 50px 0 25px 0; text-align: center; font-weight: 500;")
+    | Cảm ơn bạn đã tin tưởng CheckInn. Chúng tôi luôn sẵn sàng phục vụ bạn!
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 20px;") #{refundStatus}
-
-  //- CTA
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 30px 0;")
-    tr
-      td.button-container(align="center" style="padding: 10px 0 20px 0;")
-        a.button(href=findBookingLink style="background-color: #007bff; border-radius: 5px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 14px 28px; text-align: center; text-decoration: none;") 
-          | Tìm kiếm đặt phòng khác
-
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-top: 30px; margin-bottom: 20px;") 
-    | Cảm ơn bạn đã sử dụng dịch vụ của CheckInn.
-
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 0;") 
+  p(style="font-size: 17px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0; text-align: center;")
     | Trân trọng,
     br
-    strong Đội ngũ CheckInn
+    strong(style="color: var(--primary-700); font-weight: 600;") Đội ngũ CheckInn

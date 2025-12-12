@@ -1,68 +1,131 @@
 extends _layout
 
 block content
-  h1(style="font-size: 24px; font-weight: 600; color: #007bff; margin-top: 0; margin-bottom: 15px;") Mã xác thực OTP
+  h1(id="main-heading") Mã xác thực bảo mật ■
 
-  p.lead(style="font-size: 18px; font-weight: 500; margin-bottom: 25px; color: #333333;") 
-    | Chào #{firstName},
+  p.lead
+    | Chào
+    span.highlight #{firstName}
+    | , mã OTP của bạn đã sẵn sàng.
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 20px;") 
-    | Đây là mã OTP của bạn để xác thực email và hoàn tất đăng ký tài khoản CheckInn. Vui lòng nhập mã này vào trang đăng ký.
+  p Đây là mã xác thực đặc biệt được tạo bởi hệ thống bảo mật của CheckInn. Vui lòng nhập mã này để hoàn tất quá trình xác thực tài khoản của bạn.
 
-  //- OTP Code Display
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 25px 0;")
+  //- OTP Code Display với modern light design và accessibility
+  section(aria-labelledby="otp-code-heading" style="margin: 50px 0;")
+    table(border="0" cellpadding="0" cellspacing="0" width="100%" role="region")
+      tr
+        td(align="center")
+          table(border="0" cellpadding="0" cellspacing="0" style="background: var(--card-bg); border: 2px solid var(--border-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden; position: relative;" role="presentation")
+            tr
+              td(style="padding: 50px 40px; position: relative;")
+                h2(id="otp-code-heading" style="margin: 0 0 20px 0; font-size: 18px; color: var(--text-secondary); text-align: center; font-weight: 600;") MÃ XÁC THỰC CỦA BẠN
+                p(style="margin: 0; font-size: 56px; font-weight: 800; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 20px; text-align: center; font-family: 'Poppins', sans-serif; line-height: 1;" aria-label="Mã OTP: #{otpCode}" role="text")= otpCode
+                p(style="margin: 20px 0 0 0; font-size: 14px; color: var(--text-muted); text-align: center; font-weight: 500;") Mã này chỉ có hiệu lực một lần
+
+  //- Expiry Warning với Glowing Alert và accessibility
+  section(aria-labelledby="expiry-warning-heading" style="margin: 40px 0;")
+    div(style="background: linear-gradient(135deg, var(--warning-bg) 0%, var(--warning-bg-light) 100%); border: 1px solid var(--warning-border); border-radius: 12px; padding: 20px; margin: 25px 0; box-shadow: 0 4px 12px rgba(255, 193, 7, 0.15);", role="alert", aria-live="assertive", aria-labelledby="suspicious-activity-heading")
+      table(border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation")
+        tr
+          td(style="padding: 35px; text-align: center;")
+            table(border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation")
+              tr
+                td(align="center" style="padding-bottom: 20px;")
+                  p(style="font-size: 40px; margin: 0; line-height: 1;" aria-hidden="true") ⏰
+                  h3(id="expiry-warning-heading" style="margin: 15px 0 0 0; font-size: 22px; color: var(--text-primary); font-weight: 600;") Thời hạn sử dụng
+                td
+                  p(style="margin: 0; font-size: 18px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px;")
+                    | Mã này sẽ tự động hết hạn sau
+                  p(style="margin: 0; font-size: 32px; font-weight: 700; color: var(--warning-color);") 5 phút
+                  p(style="margin: 15px 0 0 0; font-size: 15px; color: var(--text-muted);") Bạn có tối đa 5 lần thử nhập mã
+
+  //- Security Instructions với Dark Glass và accessibility
+  section(aria-labelledby="security-instructions-heading" style="margin: 40px 0;")
+    table.info-box(border="0" cellpadding="0" cellspacing="0" style="width: 100%;" role="region")
+      tr
+        td.info-box-header
+          table(border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation")
+            tr
+              td(width="60" valign="middle" style="padding-right: 15px;")
+                p(style="font-size: 35px; margin: 0; line-height: 1; text-shadow: 0 0 15px rgba(79, 172, 254, 0.5);" aria-hidden="true") ■
+              td(valign="middle")
+                h3(id="security-instructions-heading" style="margin: 0; font-size: 24px; font-weight: 600; color: white;") Hướng dẫn bảo mật
+      tr
+        td.info-box-body
+          table(border="0" cellpadding="0" cellspacing="0" width="100%" role="list" aria-label="Hướng dẫn bảo mật")
+            tr
+              td(style="padding: 10px 0;")
+                table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                  tr
+                    td(width="50" valign="top" style="padding-right: 20px; padding-top: 5px;")
+                      p(style="font-size: 24px; margin: 0; line-height: 1; color: var(--primary-600);") ⚡
+                    td(valign="top")
+                      p(style="margin: 0; font-size: 16px; color: var(--text-secondary); line-height: 1.7;") Nhập mã ngay trong vòng 5 phút để tránh hết hạn
+            tr
+              td.info-divider
+            tr
+              td(style="padding: 10px 0;")
+                table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                  tr
+                    td(width="50" valign="top" style="padding-right: 20px; padding-top: 5px;")
+                      p(style="font-size: 24px; margin: 0; line-height: 1; color: var(--secondary-600);") 🔒
+                    td(valign="top")
+                      p(style="margin: 0; font-size: 16px; color: var(--text-secondary); line-height: 1.7;") Mã chỉ có hiệu lực một lần, không thể sử dụng lại
+            tr
+              td.info-divider
+            tr
+              td(style="padding: 10px 0;")
+                table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                  tr
+                    td(width="50" valign="top" style="padding-right: 20px; padding-top: 5px;")
+                      p(style="font-size: 24px; margin: 0; line-height: 1; color: var(--warning-color);") 🚫
+                    td(valign="top")
+                      p(style="margin: 0; font-size: 16px; color: var(--text-secondary); line-height: 1.7;") Tuyệt đối không chia sẻ mã này với bất kỳ ai
+            tr
+              td.info-divider
+            tr
+              td(style="padding: 10px 0;")
+                table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                  tr
+                    td(width="50" valign="top" style="padding-right: 20px; padding-top: 5px;")
+                      p(style="font-size: 24px; margin: 0; line-height: 1; color: var(--accent-600);") 🔄
+                    td(valign="top")
+                      p(style="margin: 0; font-size: 16px; color: var(--text-secondary); line-height: 1.7;") Nếu hết hạn, yêu cầu gửi mã mới từ ứng dụng  //- Security Notice với Enhanced Design
+          table.alert.alert-info(border="0" cellpadding="0" cellspacing="0" width="100%" role="region" aria-labelledby="security-notice-heading")
     tr
-      td(align="center")
-        table(border="0" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);")
+      td(style="padding: 35px;")
+        table(border="0" cellpadding="0" cellspacing="0" width="100%")
           tr
-            td(style="padding: 25px 40px;")
-              p(style="margin: 0 0 10px 0; font-size: 14px; color: rgba(255,255,255,0.9); text-align: center; font-weight: 600;") 
-                | MÃ XÁC THỰC CỦA BẠN
-              p(style="margin: 0; font-size: 42px; font-weight: 700; color: #ffffff; letter-spacing: 12px; text-align: center; font-family: 'Courier New', monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.2);")= otpCode
+            td(align="center" style="padding-bottom: 25px;")
+              p(style="font-size: 50px; margin: 0; line-height: 1;") ■
+              h4(id="security-notice-heading" style="margin: 15px 0 0 0; font-size: 22px; color: var(--text-primary); font-weight: 600;") Cam kết bảo mật tối đa
+            td
+              p(style="margin: 0; font-size: 17px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; text-align: center;")
+                | Mã OTP này được mã hóa và tạo đặc biệt cho tài khoản của bạn. Hệ thống bảo mật của chúng tôi giám sát 24/7 để đảm bảo an toàn tuyệt đối.
+              p(style="margin: 0; font-size: 15px; color: var(--text-muted); line-height: 1.6; text-align: center;")
+                | Chúng tôi cam kết không bao giờ yêu cầu bạn chia sẻ mã xác thực qua bất kỳ hình thức nào.
 
-  //- Expiry Warning
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fff3cd; border: 1px solid #ffc107; border-left: 4px solid #ffc107; border-radius: 5px; margin-bottom: 25px;")
+  //- Suspicious Activity Notice
+          table.alert.alert-danger(border="0" cellpadding="0" cellspacing="0" width="100%" role="alert" aria-live="assertive")
     tr
-      td(style="padding: 15px 20px; text-align: center;")
-        p(style="margin: 0; font-size: 15px; color: #856404; font-weight: 600;") 
-          | ⏰ Mã này sẽ hết hạn sau 
-          strong 5 phút
-        p(style="margin: 8px 0 0 0; font-size: 13px; color: #856404;") 
-          | Bạn có tối đa 5 lần thử nhập mã
+      td(style="padding: 30px;")
+        table(border="0" cellpadding="0" cellspacing="0" width="100%")
+          tr
+            td(align="center")
+              p(style="margin: 0; font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 15px;")
+                | <strong id="suspicious-activity-heading" style="color: var(--text-primary);">Bạn không yêu cầu mã này?</strong>
+              p(style="margin: 0; font-size: 15px; color: var(--text-muted); line-height: 1.6;")
+                | Có thể ai đó đã nhập nhầm email của bạn. Bạn có thể bỏ qua email này một cách an toàn.
+              p(style="margin: 15px 0 0 0; font-size: 14px; color: var(--primary-600); font-weight: 600; text-align: center;")
+                | Nếu nghi ngờ có hoạt động đáng ngờ, hãy liên hệ ngay bộ phận bảo mật
 
-  //- Instructions Box
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #e7f3ff; border: 1px solid #b3d9ff; border-left: 4px solid #007bff; border-radius: 5px; margin-bottom: 25px;")
-    tr
-      td(style="padding: 20px;")
-        p(style="margin: 0 0 15px 0; font-size: 16px; color: #004085; font-weight: 600;") 
-          | 🛡️ Hướng dẫn sử dụng:
-        ul(style="margin: 0; padding-left: 20px; color: #004085;")
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;") 
-            | Nhập mã này vào trang đăng ký trong vòng 5 phút
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;") 
-            | Mã chỉ có hiệu lực một lần duy nhất
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;") 
-            | Không chia sẻ mã này với bất kỳ ai
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 0;") 
-            | Nếu hết hạn, bạn có thể yêu cầu gửi lại mã mới
+  p(style="font-size: 16px; line-height: 1.6; color: var(--text-primary); margin: 40px 0 25px 0; text-align: center; font-weight: 500;")
+    | Cần hỗ trợ kỹ thuật? Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng!
 
-  //- Security Notice
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 5px; margin-bottom: 25px;")
-    tr
-      td(style="padding: 20px; text-align: center;")
-        p(style="margin: 0 0 10px 0; font-size: 14px; color: #333333; line-height: 1.6;") 
-          | Bạn không yêu cầu mã này?
-        p(style="margin: 0; font-size: 13px; color: #777777; line-height: 1.6;") 
-          | Có thể ai đó đã nhập nhầm email của bạn. Bạn có thể bỏ qua email này một cách an toàn.
+  p(style="font-size: 15px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 10px; text-align: center;")
+    | Email: support@checkinn.vn | Hotline: 1900-XXXX
 
-  p.secondary-text(style="font-size: 14px; color: #777777; margin-top: 30px; line-height: 1.6; text-align: center;") 
-    | Cần hỗ trợ? Liên hệ 
-    a(href="mailto:support@checkinn.vn" style="color: #007bff; text-decoration: none; font-weight: 600;") support@checkinn.vn
-    br
-    | Hotline: 
-    strong(style="color: #333333;") 1900-xxxx
-
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-top: 30px; margin-bottom: 0;") 
+  p(style="font-size: 17px; line-height: 1.6; color: var(--text-secondary); margin: 30px 0 0 0; text-align: center;")
     | Trân trọng,
     br
-    strong Đội ngũ CheckInn
+    strong(style="color: var(--primary-700); font-weight: 600;") Đội ngũ CheckInn

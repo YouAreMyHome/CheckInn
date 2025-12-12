@@ -4,7 +4,7 @@ const path = require('path');
 
 // Test data cho các email templates
 const testData = {
-  welcome: {
+  'welcome': {
     pageTitle: 'Chào mừng - CheckInn',
     logoLink: 'https://checkinn.vn',
     firstName: 'Nguyễn Văn A',
@@ -13,7 +13,7 @@ const testData = {
     exploreLink: 'https://checkinn.vn/search',
     companyAddress: '123 Đường ABC, Quận 1, TP.HCM'
   },
-  bookingConfirmation: {
+  'booking-confirmation': {
     pageTitle: 'Xác nhận đặt phòng - CheckInn',
     logoLink: 'https://checkinn.vn',
     customerName: 'Nguyễn Văn A',
@@ -28,14 +28,14 @@ const testData = {
     manageBookingLink: 'https://checkinn.vn/booking/CHK-2024-001234',
     companyAddress: '123 Đường ABC, Quận 1, TP.HCM'
   },
-  otpVerification: {
+  'otp-verification': {
     pageTitle: 'Xác thực OTP - CheckInn',
     logoLink: 'https://checkinn.vn',
     firstName: 'Nguyễn Văn A',
     otpCode: '1 2 3 4 5 6',
     companyAddress: '123 Đường ABC, Quận 1, TP.HCM'
   },
-  passwordReset: {
+  'password-reset': {
     pageTitle: 'Đặt lại mật khẩu - CheckInn',
     logoLink: 'https://checkinn.vn',
     customerName: 'Nguyễn Văn A',
@@ -43,7 +43,7 @@ const testData = {
     expiryTime: '1 giờ',
     companyAddress: '123 Đường ABC, Quận 1, TP.HCM'
   },
-  bookingCancelled: {
+  'booking-cancelled': {
     pageTitle: 'Hủy đặt phòng - CheckInn',
     logoLink: 'https://checkinn.vn',
     customerName: 'Nguyễn Văn A',
@@ -74,27 +74,18 @@ function renderEmail(templateName, data) {
 // Render tất cả email templates
 console.log('🚀 Rendering CheckInn Email Templates...\n');
 
-const templateMap = {
-  'welcome': 'welcome',
-  'booking-confirmation': 'booking-confirmation',
-  'otp-verification': 'otp-verification',
-  'password-reset': 'password-reset',
-  'booking-cancelled': 'booking-cancelled'
-};
-
 let successCount = 0;
 
-Object.keys(templateMap).forEach(displayName => {
-  const fileName = templateMap[displayName];
-  if (renderEmail(fileName, testData[displayName.replace('-', '')] || testData[displayName])) {
+Object.keys(testData).forEach(templateName => {
+  if (renderEmail(templateName, testData[templateName])) {
     successCount++;
   }
 });
 
-console.log(`\n📊 Results: ${successCount}/${templates.length} templates rendered successfully`);
+console.log(`\n📊 Results: ${successCount}/${Object.keys(testData).length} templates rendered successfully`);
 console.log('📁 Check the generated HTML files to preview the emails in your browser');
 
-if (successCount === templates.length) {
+if (successCount === Object.keys(testData).length) {
   console.log('\n🎉 All email templates rendered successfully!');
   console.log('💡 Tip: Open the HTML files in your browser to see the beautiful new design');
 } else {

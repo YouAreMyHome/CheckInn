@@ -1,67 +1,101 @@
 extends _layout
 
 block content
-  h1(style="font-size: 24px; font-weight: 600; color: #007bff; margin-top: 0; margin-bottom: 15px;") Đặt phòng của bạn đã được xác nhận!
+  h1(id="main-heading") Đặt phòng thành công! ✓
 
-  p.lead(style="font-size: 18px; font-weight: 500; margin-bottom: 25px; color: #333333;") 
-    | Chào #{customerName}, cảm ơn bạn đã tin tưởng đặt phòng qua CheckInn.
+  p.lead
+    | Chào
+    span.highlight #{customerName}
+    | , đặt phòng của bạn đã được xác nhận thành công.
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 20px;") 
-    | Vui lòng kiểm tra lại thông tin chi tiết đặt phòng của bạn dưới đây. Đây chính là xác nhận đặt phòng của bạn, bạn có thể xuất trình email này khi nhận phòng.
+  p Chúng tôi xin xác nhận rằng đặt phòng của bạn đã được xử lý thành công. Đây là thông tin chi tiết về đặt phòng - bạn có thể xuất trình email này khi nhận phòng. Chúng tôi cam kết cung cấp dịch vụ chất lượng cao để đảm bảo trải nghiệm lưu trú tốt nhất cho bạn.
 
-  //- Box thông tin chính
-  table.info-box(border="0" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 5px; margin-bottom: 25px;")
-    tr
-      td.info-label(width="40%" style="padding: 15px; font-size: 16px; color: #777777;") Mã đặt phòng
-      td.info-data(width="60%" style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{bookingId}
-    tr
-      td.info-box-divider(colspan="2" style="border-top: 1px solid #e9ecef;")
-    tr
-      td.info-label(style="padding: 15px; font-size: 16px; color: #777777;") Khách sạn
-      td.info-data(style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{hotelName}
-    tr
-      td.info-box-divider(colspan="2" style="border-top: 1px solid #e9ecef;")
-    tr
-      td.info-label(style="padding: 15px; font-size: 16px; color: #777777;") Địa chỉ
-      td.info-data(style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{hotelAddress}
-    tr
-      td.info-box-divider(colspan="2" style="border-top: 1px solid #e9ecef;")
-    tr
-      td.info-label(style="padding: 15px; font-size: 16px; color: #777777;") Nhận phòng
-      td.info-data(style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{checkInDate}
-    tr
-      td.info-box-divider(colspan="2" style="border-top: 1px solid #e9ecef;")
-    tr
-      td.info-label(style="padding: 15px; font-size: 16px; color: #777777;") Trả phòng
-      td.info-data(style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{checkOutDate}
-    tr
-      td.info-box-divider(colspan="2" style="border-top: 1px solid #e9ecef;")
-    tr
-      td.info-label(style="padding: 15px; font-size: 16px; color: #777777;") Chi tiết phòng
-      td.info-data(style="padding: 15px; font-size: 16px; color: #333333; font-weight: 600; text-align: right;") #{roomType}
+  //- Booking Details với modern table design và accessibility
+  section(aria-labelledby="booking-details-heading" style="margin: 40px 0;")
+    table.info-box(border="0" cellpadding="0" cellspacing="0" style="width: 100%;" role="region")
+      tr
+        td.info-box-header
+          table(border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation")
+            tr
+              td(width="60" valign="middle" style="padding-right: 15px;")
+                p(style="font-size: 35px; margin: 0; line-height: 1;" aria-hidden="true") ■
+              td(valign="middle")
+                h2(id="booking-details-heading" style="margin: 0; font-size: 24px; font-weight: 600; color: white;") Chi tiết đặt phòng
+      tr
+        td.info-box-body
+          table(border="0" cellpadding="0" cellspacing="0" width="100%" role="table" aria-label="Chi tiết đặt phòng" style="border-collapse: collapse;")
+            tr(style="background: var(--card-bg); border-bottom: 1px solid var(--border-color);")
+              td(style="padding: 15px 20px; font-weight: 600; color: var(--text-primary); border-right: 1px solid var(--border-color); width: 30%;") Mã đặt phòng
+              td(style="padding: 15px 20px; color: var(--text-primary); font-weight: 500;") #{bookingId}
+            tr(style="background: var(--secondary-50); border-bottom: 1px solid var(--border-color);")
+              td(style="padding: 15px 20px; font-weight: 600; color: var(--text-primary); border-right: 1px solid var(--border-color);") Khách sạn
+              td(style="padding: 15px 20px; color: var(--text-primary); font-weight: 500;") #{hotelName}
+            tr(style="background: var(--card-bg); border-bottom: 1px solid var(--border-color);")
+              td(style="padding: 15px 20px; font-weight: 600; color: var(--text-primary); border-right: 1px solid var(--border-color);") Địa chỉ
+              td(style="padding: 15px 20px; color: var(--text-primary); font-weight: 500;") #{hotelAddress}
+            tr(style="background: var(--secondary-50); border-bottom: 1px solid var(--border-color);")
+              td(style="padding: 15px 20px; font-weight: 600; color: var(--text-primary); border-right: 1px solid var(--border-color);") Nhận phòng
+              td(style="padding: 15px 20px; color: var(--text-primary); font-weight: 500;") #{checkInDate}
+            tr(style="background: var(--card-bg); border-bottom: 1px solid var(--border-color);")
+              td(style="padding: 15px 20px; font-weight: 600; color: var(--text-primary); border-right: 1px solid var(--border-color);") Trả phòng
+              td(style="padding: 15px 20px; color: var(--text-primary); font-weight: 500;") #{checkOutDate}
+            tr(style="background: var(--secondary-50);")
+              td(style="padding: 15px 20px; font-weight: 600; color: var(--text-primary); border-right: 1px solid var(--border-color);") Loại phòng
+              td(style="padding: 15px 20px; color: var(--text-primary); font-weight: 500;") #{roomType}
 
-  //- CTA
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 30px 0;")
+  //- CTA Button với improved accessibility
+  table.button-container(border="0" cellpadding="0" cellspacing="0" width="100%" role="region" aria-labelledby="manage-booking-heading")
     tr
-      td.button-container(align="center" style="padding: 10px 0 20px 0;")
-        a.button(href=manageBookingLink style="background-color: #007bff; border-radius: 5px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 14px 28px; text-align: center; text-decoration: none;") 
-          | Quản lý Đặt phòng
+      td.button-container(align="center")
+        h2(id="manage-booking-heading" style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;") Quản lý đặt phòng của bạn
+        a.button(href=manageBookingLink aria-describedby="manage-booking-heading") Quản lý đặt phòng
 
-  h3(style="color: #333; font-size: 20px; font-weight: 600; border-bottom: 1px solid #e9ecef; padding-bottom: 5px; margin-top: 10px;") Tóm tắt thanh toán
+  h3(id="payment-summary-heading" style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin: 60px 0 30px 0; text-align: center;") ◉ Tóm tắt thanh toán
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 20px;")
-    strong Tổng thanh toán: #{totalPaid}
-    br
-    | (Đã thanh toán qua Thẻ tín dụng)
+  section(aria-labelledby="payment-summary-heading" style="margin: 35px 0;")
+    table.alert.alert-success(border="0" cellpadding="0" cellspacing="0" style="width: 100%;" role="region")
+      tr
+        td(style="padding: 35px;")
+          table(border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation")
+            tr
+              td(align="center")
+                p(style="margin: 0; font-size: 20px; color: var(--text-secondary); font-weight: 500; margin-bottom: 15px;") Tổng thanh toán
+                p(style="margin: 0; font-size: 32px; font-weight: 700; color: var(--success-color);") #{totalPaid}
+                p(style="margin: 15px 0 0 0; font-size: 15px; color: var(--text-muted);") (Đã thanh toán qua thẻ tín dụng)
 
-  h3(style="color: #333; font-size: 20px; font-weight: 600; border-bottom: 1px solid #e9ecef; padding-bottom: 5px;") Chính sách hủy
+  h3(id="cancellation-policy-heading" style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin: 60px 0 30px 0; text-align: center;") ⚠ Chính sách hủy phòng
 
-  p.secondary-text(style="font-size: 14px; color: #777777; margin-bottom: 20px;") #{cancellationPolicy}
+  section(aria-labelledby="cancellation-policy-heading" style="margin: 35px 0;")
+    table.alert.alert-warning(border="0" cellpadding="0" cellspacing="0" style="width: 100%;" role="region")
+      tr
+        td(style="padding: 35px;")
+          p(style="margin: 0; font-size: 17px; color: var(--text-secondary); line-height: 1.7; text-align: center;")
+            | #{cancellationPolicy}
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-top: 30px; margin-bottom: 20px;") 
-    | Chúc bạn có một chuyến đi tuyệt vời!
+  h3(id="checkin-info-heading" style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin: 60px 0 30px 0; text-align: center;") ⊕ Thông tin nhận phòng
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 0;") 
+  section(aria-labelledby="checkin-info-heading" style="margin: 35px 0;")
+    table.alert.alert-info(border="0" cellpadding="0" cellspacing="0" style="width: 100%;" role="region")
+      tr
+        td(style="padding: 35px;")
+          table(border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation")
+            tr
+              td(align="center" style="padding-bottom: 25px;")
+                p(style="font-size: 50px; margin: 0; line-height: 1;" aria-hidden="true") ⌂
+                h4(style="margin: 15px 0 0 0; font-size: 20px; color: var(--text-primary); font-weight: 600;") Hướng dẫn nhận phòng
+              td
+                ul(style="margin: 0; padding-left: 0; color: var(--text-secondary); list-style: none;" role="list")
+                  li(style="font-size: 16px; line-height: 1.7; margin-bottom: 20px;" role="listitem")
+                    | • Vui lòng mang theo email xác nhận này và giấy tờ tùy thân
+                  li(style="font-size: 16px; line-height: 1.7; margin-bottom: 20px;" role="listitem")
+                    | • Giờ nhận phòng tiêu chuẩn: 14:00 (trừ khi có thỏa thuận khác)
+                  li(style="font-size: 16px; line-height: 1.7; margin-bottom: 20px;" role="listitem")
+                    | • Liên hệ lễ tân ngay khi đến để được hỗ trợ tốt nhất
+                  li(style="font-size: 16px; line-height: 1.7;" role="listitem")
+                    | • Số điện thoại khách sạn: #{hotelPhone || 'Liên hệ CheckInn để được hỗ trợ'}  p(style="font-size: 18px; line-height: 1.7; color: var(--text-primary); margin: 50px 0 25px 0; text-align: center; font-weight: 500;")
+    | Chúc bạn có một kỳ nghỉ tốt đẹp và thoải mái.
+
+  p(style="font-size: 17px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0; text-align: center;")
     | Trân trọng,
     br
-    strong Đội ngũ CheckInn
+    strong(style="color: var(--primary-700); font-weight: 600;") Đội ngũ CheckInn

@@ -1,90 +1,132 @@
 extends _layout
 
 block content
-  h1(style="font-size: 24px; font-weight: 600; color: #007bff; margin-top: 0; margin-bottom: 15px;") Chào mừng đến với CheckInn!
+  h1(id="main-heading") Chào mừng đến với CheckInn! ▶
 
-  p.lead(style="font-size: 18px; font-weight: 500; margin-bottom: 25px; color: #333333;") 
-    | Chào #{firstName}, cảm ơn bạn đã tin tưởng và đăng ký tài khoản CheckInn.
+  p.lead
+    | Chào
+    span.highlight #{firstName}
+    | , cảm ơn bạn đã tin tưởng và gia nhập cộng đồng CheckInn.
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 20px;") 
-    | Chúng tôi vô cùng vui mừng chào đón bạn đến với cộng đồng CheckInn - nơi những trải nghiệm lưu trú tuyệt vời trở thành hiện thực. Với hàng nghìn khách sạn chất lượng và dịch vụ hỗ trợ 24/7, chúng tôi cam kết mang đến cho bạn những chuyến đi đáng nhớ nhất.
+  p Chúng tôi rất hân hạnh chào đón bạn đến với hệ thống đặt phòng hiện đại của CheckInn. Với mạng lưới khách sạn đối tác chất lượng cao, chúng tôi cam kết cung cấp dịch vụ đặt phòng đáng tin cậy và thuận tiện.
 
-  //- Hero Image/Icon
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 30px 0;")
+  //- Hero Section với modern card design và accessibility
+  section(aria-labelledby="hero-heading" style="margin: 50px 0;")
+    table(border="0" cellpadding="0" cellspacing="0" width="100%" style="text-align: center;" role="banner")
+      tr
+        td
+          table(border="0" cellpadding="0" cellspacing="0" style="background: var(--card-bg); border-radius: var(--radius-lg); padding: 50px; margin: 0 auto; max-width: 550px; border: 1px solid var(--border-color); box-shadow: var(--shadow-lg); position: relative;" role="presentation")
+            tr
+              td(align="center")
+                p(style="font-size: 90px; line-height: 1; margin: 0 0 25px 0;" aria-hidden="true" role="presentation") ▶
+                h2(id="hero-heading" style="color: var(--text-primary); font-size: 32px; font-weight: 700; margin: 0 0 15px 0; font-family: 'Poppins', sans-serif;") Bắt đầu trải nghiệm đặt phòng
+                p(style="color: var(--text-secondary); font-size: 18px; margin: 0; line-height: 1.6;" aria-describedby="hero-heading") Khám phá các lựa chọn lưu trú chất lượng
+
+  h2 Các tính năng chính của CheckInn:
+
+  //- Feature Cards với modern light design
+  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 50px;")
     tr
-      td(align="center" style="font-size: 64px; line-height: 1;") 🎉
-
-  //- Tính năng nổi bật
-  h3(style="color: #333; font-size: 20px; font-weight: 600; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px;") Những điều bạn có thể làm với CheckInn:
-
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 25px;")
-    tr
-      td(style="padding: 15px 0;")
-        table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; border-left: 4px solid #007bff; border-radius: 5px;")
+      td(style="padding: 25px 0;")
+        table.info-box(border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin-bottom: 25px;")
           tr
-            td(style="padding: 15px 20px;")
-              p(style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;") 🏨 Tìm kiếm & Đặt phòng nhanh chóng
-              p(style="margin: 8px 0 0 0; font-size: 14px; color: #777777; line-height: 1.5;") 
-                | Khám phá hàng nghìn khách sạn chất lượng cao với giá tốt nhất trên toàn quốc.
+            td.info-box-header
+              table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                tr
+                  td(width="80" valign="middle" style="padding-right: 20px;")
+                    p(style="font-size: 45px; margin: 0; line-height: 1;") 🔍
+                  td(valign="middle")
+                    h3(style="margin: 0; font-size: 22px; font-weight: 600; color: white;") Tìm kiếm và đặt phòng dễ dàng
+            td.info-box-body
+              p(style="margin: 0; font-size: 17px; color: var(--text-secondary); line-height: 1.7;") Giao diện tìm kiếm trực quan giúp bạn nhanh chóng tìm thấy khách sạn phù hợp với nhu cầu.
 
     tr
-      td(style="padding: 15px 0;")
-        table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; border-left: 4px solid #007bff; border-radius: 5px;")
+      td(style="padding: 25px 0;")
+        table.info-box(border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin-bottom: 25px;")
           tr
-            td(style="padding: 15px 20px;")
-              p(style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;") 💰 Đảm bảo giá tốt nhất
-              p(style="margin: 8px 0 0 0; font-size: 14px; color: #777777; line-height: 1.5;") 
-                | Cam kết mức giá cạnh tranh nhất thị trường với nhiều ưu đãi độc quyền.
+            td.info-box-header
+              table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                tr
+                  td(width="80" valign="middle" style="padding-right: 20px;")
+                    p(style="font-size: 45px; margin: 0; line-height: 1;") ◆
+                  td(valign="middle")
+                    h3(style="margin: 0; font-size: 22px; font-weight: 600; color: white;") Trải nghiệm cao cấp
+            td.info-box-body
+              p(style="margin: 0; font-size: 17px; color: var(--text-secondary); line-height: 1.7;") Đa dạng lựa chọn từ khách sạn boutique đến resort nghỉ dưỡng cao cấp.
 
     tr
-      td(style="padding: 15px 0;")
-        table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; border-left: 4px solid #007bff; border-radius: 5px;")
+      td(style="padding: 25px 0;")
+        table.info-box(border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin-bottom: 25px;")
           tr
-            td(style="padding: 15px 20px;")
-              p(style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;") ⭐ Đánh giá thật từ khách hàng
-              p(style="margin: 8px 0 0 0; font-size: 14px; color: #777777; line-height: 1.5;") 
-                | Tham khảo hàng nghìn đánh giá chân thực từ những khách đã trải nghiệm.
+            td.info-box-header
+              table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                tr
+                  td(width="80" valign="middle" style="padding-right: 20px;")
+                    p(style="font-size: 45px; margin: 0; line-height: 1;") ⚡
+                  td(valign="middle")
+                    h3(style="margin: 0; font-size: 22px; font-weight: 600; color: white;") Đặt phòng tức thì
+            td.info-box-body
+              p(style="margin: 0; font-size: 17px; color: var(--text-secondary); line-height: 1.7;") Quy trình đặt phòng nhanh chóng với xác nhận tức thời.
 
+  //- Social Proof Section với modern design
+  table.alert.alert-info(border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin: 50px 0;", role="region", aria-labelledby="social-proof-heading")
     tr
-      td(style="padding: 15px 0;")
-        table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; border-left: 4px solid #007bff; border-radius: 5px;")
+      td(style="padding: 40px;")
+        table(border="0" cellpadding="0" cellspacing="0" width="100%")
           tr
-            td(style="padding: 15px 20px;")
-              p(style="margin: 0; font-size: 16px; color: #333333; font-weight: 600;") 🎯 Hỗ trợ khách hàng 24/7
-              p(style="margin: 8px 0 0 0; font-size: 14px; color: #777777; line-height: 1.5;") 
-                | Đội ngũ chuyên nghiệp luôn sẵn sàng hỗ trợ bạn mọi lúc, mọi nơi.
+            td(align="center")
+              h3(style="color: var(--text-primary); font-size: 28px; font-weight: 600; margin: 0 0 30px 0; font-family: 'Poppins', sans-serif;", id="social-proof-heading") ★ Được tin tưởng bởi hàng nghìn khách hàng
+              table(border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 30px;")
+                tr
+                  td(align="center" width="33%" style="padding: 15px;")
+                    p(style="font-size: 36px; font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0 0 8px 0;") 75K+
+                    p(style="font-size: 15px; color: var(--text-secondary); margin: 0; font-weight: 500;") Khách hàng hài lòng
+                  td(align="center" width="33%" style="padding: 15px;")
+                    p(style="font-size: 36px; font-weight: 700; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0 0 8px 0;") 8,500+
+                    p(style="font-size: 15px; color: var(--text-secondary); margin: 0; font-weight: 500;") Khách sạn đối tác
+                  td(align="center" width="33%" style="padding: 15px;")
+                    p(style="font-size: 36px; font-weight: 700; color: var(--success-color); margin: 0 0 8px 0;") 4.9/5
+                    p(style="font-size: 15px; color: var(--text-secondary); margin: 0; font-weight: 500;") Đánh giá trung bình
 
-  //- CTA Button
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 30px 0;")
+  //- CTA Button với improved accessibility
+  table.button-container(border="0" cellpadding="0" cellspacing="0" width="100%" role="region" aria-labelledby="cta-heading")
     tr
-      td(align="center" style="padding: 10px 0 20px 0;")
-        a.button(href=url style="background-color: #007bff; border-radius: 5px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; padding: 14px 28px; text-align: center; text-decoration: none;") 
-          | Bắt đầu khám phá ngay
+      td.button-container(align="center")
+        h2(id="cta-heading" style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;") Bắt đầu đặt phòng
+        a.button(href=exploreLink aria-describedby="cta-heading") Bắt đầu đặt phòng
 
-  //- Tips
-  h3(style="color: #333; font-size: 20px; font-weight: 600; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-top: 35px; margin-bottom: 20px;") Mẹo để có trải nghiệm tốt nhất:
+  p(style="text-align: center; font-size: 17px; color: var(--text-secondary); margin-top: 25px; font-weight: 500;")
+    | Hãy bắt đầu trải nghiệm dịch vụ đặt phòng chuyên nghiệp của CheckInn.
 
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fff7e6; border: 1px solid #ffd666; border-radius: 5px; margin-bottom: 25px;")
-    tr
-      td(style="padding: 20px;")
-        ul(style="margin: 0; padding-left: 20px; color: #333333;")
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;") 
-            strong Hoàn thiện hồ sơ:
-            |  Cập nhật đầy đủ thông tin cá nhân để check-in nhanh chóng hơn.
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;") 
-            strong Đăng ký nhận thông báo:
-            |  Nhận ngay các ưu đãi và flash sale đặc biệt.
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;") 
-            strong Đọc kỹ chính sách hủy:
-            |  Mỗi khách sạn có chính sách riêng, hãy kiểm tra trước khi đặt.
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 0;") 
-            strong Đánh giá sau chuyến đi:
-            |  Chia sẻ trải nghiệm để giúp cộng đồng có lựa chọn tốt hơn.
+  //- Tips Section với harmonious design
+  h3(id="tips-heading" style="color: var(--text-primary); font-size: 26px; font-weight: 600; margin: 60px 0 30px 0; text-align: center;") 💡 Lời khuyên để sử dụng hiệu quả:
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-top: 30px; margin-bottom: 20px;") 
-    | Chúc bạn có những trải nghiệm tuyệt vời cùng CheckInn!
+  section(aria-labelledby="tips-heading" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); margin-bottom: 40px; box-shadow: var(--shadow-md);")
+    table(border="0" cellpadding="0" cellspacing="0" width="100%" role="list")
+      tr
+        td(style="padding: 35px;")
+          ul(style="margin: 0; padding-left: 25px; color: var(--text-primary); list-style: none;" role="list")
+            li(style="font-size: 16px; line-height: 1.8; margin-bottom: 20px; position: relative; padding-left: 35px;" role="listitem")
+              p(style="position: absolute; left: 0; top: 0; font-size: 20px; color: var(--primary-600);" aria-hidden="true") ★
+              strong(style="color: var(--primary-700); font-weight: 600;") Cập nhật thông tin cá nhân:
+              |  Điền đầy đủ thông tin để quá trình đặt phòng và check-in diễn ra thuận lợi.
+            li(style="font-size: 16px; line-height: 1.8; margin-bottom: 20px; position: relative; padding-left: 35px;" role="listitem")
+              p(style="position: absolute; left: 0; top: 0; font-size: 20px; color: var(--secondary-600);" aria-hidden="true") ⊕
+              strong(style="color: var(--secondary-700); font-weight: 600;") Lựa chọn linh hoạt:
+              |  So sánh giá cả và tiện nghi để chọn khách sạn phù hợp nhất với nhu cầu của bạn.
+            li(style="font-size: 16px; line-height: 1.8; margin-bottom: 20px; position: relative; padding-left: 35px;" role="listitem")
+              p(style="position: absolute; left: 0; top: 0; font-size: 20px; color: var(--accent-600);" aria-hidden="true") ★
+              strong(style="color: var(--accent-700); font-weight: 600;") Theo dõi đặt phòng:
+              |  Kiểm tra email thường xuyên để nhận thông tin cập nhật về đặt phòng của bạn.
+            li(style="font-size: 16px; line-height: 1.8; margin-bottom: 0; position: relative; padding-left: 35px;" role="listitem")
+              p(style="position: absolute; left: 0; top: 0; font-size: 20px; color: var(--primary-600);" aria-hidden="true") 💬
+              strong(style="color: var(--primary-700); font-weight: 600;") Đánh giá dịch vụ:
+              |  Phản hồi sau khi sử dụng giúp chúng tôi cải thiện chất lượng dịch vụ.
 
-  p(style="font-size: 16px; line-height: 1.6; color: #333333; margin-bottom: 0;") 
+  p(style="font-size: 18px; line-height: 1.7; color: var(--text-primary); margin-top: 40px; margin-bottom: 25px; text-align: center;")
+    | Chúc bạn có những trải nghiệm lưu trú tốt đẹp cùng CheckInn.
+
+  p(style="font-size: 17px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0; text-align: center;")
     | Trân trọng,
     br
-    strong Đội ngũ CheckInn
+    strong(style="color: var(--primary-700); font-weight: 600;") Đội ngũ CheckInn

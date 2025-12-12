@@ -7,8 +7,8 @@
 
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const Hotel = require('./src/models/Hotel.model');
-const User = require('./src/models/User.model');
+const Hotel = require('../src/models/Hotel.model');
+const User = require('../src/models/User.model');
 
 dotenv.config();
 

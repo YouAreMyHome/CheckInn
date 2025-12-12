@@ -10,19 +10,19 @@ block content
     | Cảm ơn bạn đã đăng ký tài khoản CheckInn. Để đảm bảo an toàn và bảo mật cho tài khoản của bạn, vui lòng xác thực địa chỉ email bằng cách nhấn vào nút bên dưới.
 
   //- Security Notice Box
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #e7f3ff; border: 1px solid #b3d9ff; border-left: 4px solid #007bff; border-radius: 5px; margin-bottom: 25px;")
+  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #e7f3ff; border: 1px solid #b3d9ff; border-left: 4px solid #007bff; border-radius: 5px; margin-bottom: 25px;", role="region", aria-labelledby="security-reasons-heading")
     tr
       td(style="padding: 20px;")
-        p(style="margin: 0 0 15px 0; font-size: 16px; color: #004085; font-weight: 600;") 
+        p(style="margin: 0 0 15px 0; font-size: 16px; color: #004085; font-weight: 600;", id="security-reasons-heading") 
           | 🔐 Tại sao cần xác thực email?
-        ul(style="margin: 0; padding-left: 20px; color: #004085;")
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;") 
+        ul(style="margin: 0; padding-left: 20px; color: #004085;", role="list")
+          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;", role="listitem") 
             | Bảo vệ tài khoản của bạn khỏi truy cập trái phép
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;") 
+          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;", role="listitem") 
             | Nhận thông báo quan trọng về đặt phòng
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;") 
+          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 8px;", role="listitem") 
             | Khôi phục mật khẩu dễ dàng khi cần thiết
-          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 0;") 
+          li(style="font-size: 14px; line-height: 1.8; margin-bottom: 0;", role="listitem") 
             | Truy cập đầy đủ tính năng của CheckInn
 
   //- CTA Button
@@ -42,10 +42,10 @@ block content
           | #{verificationUrl}
 
   //- Expiry Warning
-  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fff3cd; border: 1px solid #ffc107; border-left: 4px solid #ffc107; border-radius: 5px; margin-bottom: 25px;")
+  table(border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fff3cd; border: 1px solid #ffc107; border-left: 4px solid #ffc107; border-radius: 5px; margin-bottom: 25px;", role="alert", aria-live="polite", aria-labelledby="expiry-warning-heading")
     tr
       td(style="padding: 20px;")
-        p(style="margin: 0; font-size: 15px; color: #856404; font-weight: 600; text-align: center;") 
+        p(style="margin: 0; font-size: 15px; color: #856404; font-weight: 600; text-align: center;", id="expiry-warning-heading") 
           | ⏰ Link này sẽ hết hạn sau 24 giờ
         p(style="margin: 10px 0 0 0; font-size: 13px; color: #856404; text-align: center;") 
           | Nếu hết hạn, bạn có thể yêu cầu gửi lại email xác thực từ trang đăng nhập.
